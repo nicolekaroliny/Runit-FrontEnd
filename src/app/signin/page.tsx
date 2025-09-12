@@ -9,12 +9,12 @@ export default function SignIn() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Aqui você adicionaria a lógica de autenticação
+    // Lógica de autenticação
     console.log('Email:', email, 'Password:', password);
   };
 
   return (
-    <><div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-[#20017B] p-10 rounded-xl shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
@@ -36,7 +36,8 @@ export default function SignIn() {
                 className="appearance-none relative block w-full px-3 py-3 bg-white border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="seu@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} />
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
@@ -51,7 +52,8 @@ export default function SignIn() {
                 className="appearance-none relative block w-full px-3 py-3 bg-white border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Sua senha"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} />
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
           </div>
 
@@ -74,13 +76,6 @@ export default function SignIn() {
           </div>
         </form>
       </div>
-    </div><div className="text-center mt-4">
-        <span className="text-sm text-white">
-          Não possuo uma conta{' '}
-          <Link href="/signup" className="font-medium text-indigo-300 hover:text-indigo-200">
-            Cadastro
-          </Link>
-        </span>
-      </div></>
+    </div>
   );
 }
