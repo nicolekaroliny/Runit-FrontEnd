@@ -19,7 +19,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row w-full max-w-3xl rounded-2xl shadow-lg overflow-hidden">
-        
+
         {/* Painel Esquerdo: Imagem e Texto */}
         <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-4 md:p-5 bg-white">
           <div className="relative w-32 h-32 md:w-36 md:h-36 mb-3">

@@ -9,7 +9,7 @@ export default function SignIn() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Lógica de autenticação
+    // Lógica de login
     console.log('Email:', email, 'Password:', password);
   };
 
