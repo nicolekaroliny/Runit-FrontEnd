@@ -49,7 +49,7 @@ export default function Home() {
                 </span>
               </span>
             </a>
-            <a href="/perfil" title="Perfil" className="hover:ring-indigo-300">
+            <a href="/signin" title="Perfil" className="hover:ring-indigo-300">
               <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#3b82f6" className="w-6 h-6">
                   <circle cx="12" cy="10" r="3" stroke="#3b82f6" strokeWidth="2" />
