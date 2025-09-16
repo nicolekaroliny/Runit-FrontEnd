@@ -11,7 +11,7 @@ export default function CorridasPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col p-0">
       {/* Header */}
-      <header className="w-full relative py-6 h-24 flex items-center rounded-b-3xl" style={{ background: '#20017B', color: '#fff' }}>
+      <header className="w-full relative py-6 h-24 flex items-center rounded-b-3xl z-50" style={{ background: '#20017B', color: '#fff' }}>
         <div className="w-full flex items-center justify-between px-8">
           <div className="flex items-center gap-2 pt-8">
             <Image src="/images/logo.png" alt="Logo do Projeto" width={120} height={40} />
@@ -83,11 +83,25 @@ export default function CorridasPage() {
         </div>
       </header>
       {/* Título fora do header */}
-      <div className="flex items-center justify-center gap-3 mt-8 w-full">
-        <h2 className="text-5xl font-extrabold text-black drop-shadow-lg font-serif" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
-          Calendário de corridas
-        </h2>
-        <span className="text-5xl">📅</span>
+      <div
+        className="flex items-center justify-center gap-3 w-full relative"
+        style={{ minHeight: '400px', marginTop: '-40px', zIndex: 1 }}
+      >
+        <div
+          className="absolute inset-0 w-full h-full z-0 rounded-xl"
+          style={{
+            backgroundImage: 'url(/images/fundo_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.60,
+          }}
+        ></div>
+        <div className="flex items-center justify-center gap-3 w-full relative z-10">
+          <h2 className="text-5xl font-extrabold text-black drop-shadow-lg font-serif" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
+            Calendário de corridas
+          </h2>
+          <span className="text-5xl">📅</span>
+        </div>
       </div>
     </div>
   );
