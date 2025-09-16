@@ -2,9 +2,11 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
-export default function Home() {
+export default function CorridasPage() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-white flex flex-col p-0">
@@ -15,10 +17,30 @@ export default function Home() {
             <Image src="/images/logo.png" alt="Logo do Projeto" width={120} height={40} />
           </div>
           <nav className="flex gap-8 items-center text-2xl font-bold">
-            <a href="/" className="hover:underline">Home</a>
-            <a href="/corridas" className="hover:underline">Corridas</a>
-            <a href="/sobre-nos" className="hover:underline">Sobre Nós</a>
-            <a href="#contato" className="hover:underline">Contato</a>
+            <a
+              href="/"
+              className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-serif font-extrabold ${pathname === '/' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+            >
+              Home
+            </a>
+            <a
+              href="/corridas"
+              className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-serif font-extrabold ${pathname === '/corridas' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+            >
+              Corridas
+            </a>
+            <a
+              href="/sobre-nos"
+              className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-serif font-extrabold ${pathname === '/sobre-nos' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+            >
+              Sobre Nós
+            </a>
+            <a
+              href="#contato"
+              className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-serif font-extrabold ${pathname === '#contato' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+            >
+              Contato
+            </a>
           </nav>
           <div className="flex items-center gap-6">
             <form
