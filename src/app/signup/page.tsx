@@ -22,7 +22,7 @@ export default function SignUp() {
 
         {/* Painel Esquerdo: Imagem e Texto */}
         <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-4 md:p-5 bg-white">
-          <div className="relative w-32 h-32 md:w-36 md:h-36 mb-3">
+          <div className="relative w-32 h-32 md:w-36 md:h-36 mb-3 animate-pulse">
             <Image
               src="/runner.png" 
               alt="Pessoa correndo na linha de chegada"
