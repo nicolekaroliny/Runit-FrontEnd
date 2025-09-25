@@ -22,7 +22,7 @@ export default function CorridasPage() {
             <div className="flex items-center gap-6 h-full">
               <Image src="/images/logo.png" alt="Logo do Projeto" width={120} height={40} className="self-center" />
               <form
-                className="flex items-center bg-white rounded-full shadow px-3 py-1 w-56 md:w-72 self-center mr-2"
+                className="flex items-center bg-white rounded-full shadow px-4 py-2 w-96 md:w-[400px] self-center mr-2"
                 tabIndex={0}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#20017B" strokeWidth="2" className="w-5 h-5">
@@ -37,17 +37,17 @@ export default function CorridasPage() {
                 />
               </form>
             </div>
-            <nav className="flex gap-8 items-center text-2xl font-bold">
-              <nav className="flex gap-8 items-center text-2xl font-bold absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <nav className="flex gap-8 items-center text-lg font-bold">
+              <nav className="flex gap-8 items-center text-lg font-bold absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 <a
                   href="/"
-                  className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-extrabold ${pathname === '/' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+                  className={`px-2 py-1 rounded transition-colors duration-200 font-extrabold ${pathname === '/' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
                 >
                   Home
                 </a>
                 <a
                   href="/corridas"
-                  className={`hover:underline px-2 py-1 rounded transition-colors duration-200 font-extrabold ${pathname === '/corridas' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
+                  className={`px-2 py-1 rounded transition-colors duration-200 font-extrabold ${pathname === '/corridas' ? 'bg-white text-[#20017B] shadow' : 'text-white'}`}
                 >
                   Corridas
                 </a>
