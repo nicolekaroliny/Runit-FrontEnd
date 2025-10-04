@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Head from "next/head";
+import Link from "next/link";
 
 export default function CorridasPage() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -54,18 +55,14 @@ export default function CorridasPage() {
                 </a>
               </nav>
             </nav>
-            <div className="flex items-center gap-6">
-              <a href="/signin" title="Perfil" className="hover:ring-indigo-300">
+            <div className="flex items-center gap-6 justify-center ml-8">
+              <Link href="/signin" title="Login" className="hover:ring-indigo-300">
                 <span className="flex items-center">
-                  <span className="mr-3 text-white text-lg font-bold">Bem-vindo, usuário!</span>
-                  <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#3b82f6" className="w-6 h-6">
-                      <circle cx="12" cy="10" r="3" stroke="#3b82f6" strokeWidth="2" />
-                      <path stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 18c0-2.21 3.58-4 6-4s6 1.79 6 4" />
-                    </svg>
+                  <span className="bg-white text-[#1E5AA8] font-bold rounded-3xl px-6 py-2 shadow border border-[#1E5AA8] cursor-pointer">
+                    Login
                   </span>
                 </span>
-              </a>
+              </Link>
             </div>
           </div>
         </header>
