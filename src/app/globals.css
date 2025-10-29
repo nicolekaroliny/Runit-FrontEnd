@@ -12,15 +12,53 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+/* dark apenas se escolher */
+body.dark { 
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* ===== Runit Theme (cores do figma nos cards de corrida) ===== */
+:root {
+  --runit-primary: #1E5AA8;      /* azul principal: pílula de data, botões */
+  --runit-primary-600: #2F67C5;  /* header do card de detalhes */
+  --runit-list-bg: #E7ECF5;      /* cards da lista (cinza-azulado) */
+  --runit-list-hover: #DDE8F6;   /* hover dos cards da lista */
+  --runit-map-card-bg: #E7ECF5;  /* fundo arredondado atrás do mapa */
+  --runit-chip-border: #C9D4E6;  /* borda dos “chips” de info no card */
+  --runit-strong: #0F172A;       /* texto principal */
+  --runit-muted: #475569;        /* texto secundário */
+}
+
+
+/* INATIVOS: mais claros/desaturados */
+.leaflet-marker-icon.marker--normal {
+  opacity: 0.55;                 /* principal: deixa “lavado” */
+  filter: brightness(1.25) saturate(0.8);
+}
+
+/* ATIVO: 100% forte e acima dos outros */
+.leaflet-marker-icon.marker--active {
+  opacity: 1;
+  filter: none;                   /* ou: brightness(0.9) para levemente mais escuro */
+  z-index: 1000;
+  transform: translateY(-1px);    /* opcional: leve destaque */
+}
+
+/* opcional: ao passar o mouse no inativo, aumenta a legibilidade */
+.leaflet-marker-icon.marker--normal:hover {
+  opacity: 0.85;
+  filter: brightness(1.05) saturate(0.95);
 }
