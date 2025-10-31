@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         {/* header global */}
-        <Header userName="usuário" />
+                <Header />
         {/* conteúdo da página */}
         {children}
       </body>
