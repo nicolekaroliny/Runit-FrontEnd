@@ -3,66 +3,70 @@
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const router = useRouter();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    //Lógica de cadastro
+
+    // Lógica de cadastro
     console.log('Nome:', name, 'Email:', email, 'Password:', password, 'ConfirmPassword:', confirmPassword);
-  };
+
+    // Redirecionar somente aqui — após cadastro
+    router.push('/signin');
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row w-full max-w-3xl rounded-2xl shadow-lg overflow-hidden">
 
-        {/* Painel Esquerdo: Imagem e Texto */}
+        {/* Painel Esquerdo */}
         <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-4 md:p-5 bg-white">
 
-         {/* Logo RUNIT */}
-         <div className="bg-[#1E5AA8] w-48 h-16 rounded-md flex items-center justify-center mb-4 shadow-md mt-[-20px] mb-6">
-          <div className= "relative w-36 h-12">
+          {/* Logo RUNIT */}
+          <div className="bg-[#1E5AA8] w-48 h-16 rounded-md flex items-center justify-center mb-4 shadow-md mt-[-20px] mb-6">
+            <div className="relative w-36 h-12">
+              <Image
+                src="/images/logo.png"
+                alt="Logo RUNIT"
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            </div>
+          </div>
 
-           <Image
-             src="/images/logo.png"
-             alt="Logo RUNIT"
-             fill
-             style={{ objectFit: "contain" }}
-             priority
-           />
-           </div>
-         </div>
+          {/* Runner */}
+          <div className="relative w-40 h-40 md:w-44 md:h-44 mb-6 animate-pulse">
+            <Image
+              src="/runner.png"
+              alt="Pessoa correndo na linha de chegada"
+              fill
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </div>
 
-       {/* Runner */}
-         <div className="relative w-40 h-40 md:w-44 md:h-44 mb-6 animate-pulse">
-          <Image
-            src="/runner.png"
-            alt="Pessoa correndo na linha de chegada"
-            fill
-            style={{ objectFit: "contain" }}
-            priority
-          />
+          {/* Texto */}
+          <p className="text-sm md:text-base font-semibold text-[#1E5AA8] text-center px-2 mt-2">
+            Comece sua jornada até a linha de chegada!
+          </p>
         </div>
 
-       {/* Texto */}
-       <p className="text-sm md:text-base font-semibold text-[#1E5AA8] text-center px-2 mt-2">
-         Comece sua jornada até a linha de chegada!
-       </p>
-
-      </div>
-
-        {/* Painel Direito: Formulário de Cadastro */}
+        {/* Painel Direito */}
         <div className="w-full md:w-3/5 bg-[#1E5AA8] p-6 md:p-7 flex flex-col justify-center">
           <div className="mb-5">
             <h2 className="text-center text-2xl md:text-2xl font-extrabold text-white">
               Cadastro
             </h2>
           </div>
-          
+
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
@@ -80,7 +84,7 @@ export default function SignUp() {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
                 E-mail
@@ -97,7 +101,7 @@ export default function SignUp() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
                 Senha
@@ -114,7 +118,7 @@ export default function SignUp() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-1">
                 Confirme sua senha!
@@ -131,11 +135,11 @@ export default function SignUp() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
-            
+
             <div className="pt-1">
               <button
-              type="submit"
-                  className="w-40 mx-auto block py-3 bg-[#003B99] text-white rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.2)] hover:bg-[#002F7A] transition"
+                type="submit"
+                className="w-40 mx-auto block py-3 bg-[#003B99] text-white rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.2)] hover:bg-[#002F7A] transition"
               >
                 Cadastre-se
               </button>
@@ -153,6 +157,6 @@ export default function SignUp() {
         </div>
       </div>
     </div>
-
+    
   );
 }

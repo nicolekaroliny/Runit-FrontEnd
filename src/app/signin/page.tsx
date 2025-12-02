@@ -1,17 +1,23 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function SignIn() {
+  const router = useRouter();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     // Lógica de login
     console.log('Email:', email, 'Password:', password);
+
+    // Redirecionar — após login
+    router.push('/corridas');
   };
 
   return (
