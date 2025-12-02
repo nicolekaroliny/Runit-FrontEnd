@@ -123,7 +123,7 @@ export default function SignUp() {
             </div>
 
             <div className="text-center pt-2">
-              <span className="text-xs text-white">
+              <span className="text-sm text-white">
                 Já possuo uma conta{' '}
                 <Link href="/signin" className="font-medium text-indigo-300 hover:text-indigo-200">
                   Login
