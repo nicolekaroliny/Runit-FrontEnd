@@ -12,7 +12,6 @@ export default function SignUp() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //Lógica de cadastro
     console.log('Nome:', name, 'Email:', email, 'Password:', password, 'ConfirmPassword:', confirmPassword);
   };
 
