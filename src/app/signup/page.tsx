@@ -12,31 +12,51 @@ export default function SignUp() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    //Lógica de cadastro
     console.log('Nome:', name, 'Email:', email, 'Password:', password, 'ConfirmPassword:', confirmPassword);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-white from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row w-full max-w-3xl rounded-2xl shadow-lg overflow-hidden">
 
         {/* Painel Esquerdo: Imagem e Texto */}
         <div className="w-full md:w-2/5 flex flex-col items-center justify-center p-4 md:p-5 bg-white">
-          <div className="relative w-32 h-32 md:w-36 md:h-36 mb-3 animate-pulse">
-            <Image
-              src="/runner.png" 
-              alt="Pessoa correndo na linha de chegada"
-              fill
-              style={{ objectFit: "contain" }}
-              priority
-            />
-          </div>
-          <p className="text-sm md:text-base font-semibold text-gray-800 text-center px-2">
-            Comece sua jornada até a linha de chegada!
-          </p>
+
+         {/* Logo RUNIT */}
+         <div className="bg-[#1E5AA8] w-48 h-16 rounded-md flex items-center justify-center mb-4 shadow-md mt-[-20px] mb-6">
+          <div className= "relative w-36 h-12">
+
+           <Image
+             src="/images/logo.png"
+             alt="Logo RUNIT"
+             fill
+             style={{ objectFit: "contain" }}
+             priority
+           />
+           </div>
+         </div>
+
+       {/* Runner */}
+         <div className="relative w-40 h-40 md:w-44 md:h-44 mb-6 animate-pulse">
+          <Image
+            src="/runner.png"
+            alt="Pessoa correndo na linha de chegada"
+            fill
+            style={{ objectFit: "contain" }}
+            priority
+          />
         </div>
 
+       {/* Texto */}
+       <p className="text-sm md:text-base font-semibold text-[#1E5AA8] text-center px-2 mt-2">
+         Comece sua jornada até a linha de chegada!
+       </p>
+
+      </div>
+
         {/* Painel Direito: Formulário de Cadastro */}
-        <div className="w-full md:w-3/5 bg-[#20017B] p-6 md:p-7 flex flex-col justify-center">
+        <div className="w-full md:w-3/5 bg-[#1E5AA8] p-6 md:p-7 flex flex-col justify-center">
           <div className="mb-5">
             <h2 className="text-center text-2xl md:text-2xl font-extrabold text-white">
               Cadastro
@@ -114,8 +134,8 @@ export default function SignUp() {
             
             <div className="pt-1">
               <button
-                type="submit"
-                className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 text-sm"
+              type="submit"
+                  className="w-40 mx-auto block py-3 bg-[#003B99] text-white rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.2)] hover:bg-[#002F7A] transition"
               >
                 Cadastre-se
               </button>
@@ -124,7 +144,7 @@ export default function SignUp() {
             <div className="text-center pt-2">
               <span className="text-sm text-white">
                 Já possuo uma conta{' '}
-                <Link href="/signin" className="font-medium text-indigo-300 hover:text-indigo-200">
+                <Link href="/signin" className="font-medium text-[#20017B] hover:text-indigo-400">
                   Login
                 </Link>
               </span>
@@ -133,5 +153,6 @@ export default function SignUp() {
         </div>
       </div>
     </div>
+
   );
 }
