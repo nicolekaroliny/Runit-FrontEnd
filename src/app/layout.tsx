@@ -1,9 +1,9 @@
 import "./globals.css";
-import "leaflet/dist/leaflet.css"; // se você usa Leaflet nas outras páginas
+import "leaflet/dist/leaflet.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import NavBar from "./components/navBar/NavBar";
 import { AuthProvider } from "@/context/authcontext";
+import ConditionalNavBar from "@/app/components/ConditionalNavBar";
 
 export const metadata: Metadata = {
   title: "Runit",
@@ -22,13 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={poppins.className}>
       <body>
         <AuthProvider>
-          <NavBar/>
-          <div className="pt-24">
-            <div className="w-full">
-              <div className="min-h-screen bg-background dark:bg-black">
-                {children}
-              </div>
-            </div>
+          <ConditionalNavBar />
+          <div className="w-full min-h-screen bg-background dark:bg-black">
+            {children}
           </div>
         </AuthProvider>
       </body>
