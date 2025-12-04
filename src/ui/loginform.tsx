@@ -70,8 +70,8 @@ export function LoginForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold mb-6 text-yellow-600 text-center">
+    <div className="max-w-md mx-auto mt-20 bg-background p-8 rounded-xl shadow-md">
+      <h2 className="text-3xl font-bold mb-6 text-secondary text-center">
         Entrar no Runit
       </h2>
 
@@ -100,24 +100,24 @@ export function LoginForm() {
       </div>
 
       {error && (
-        <p className="text-red-500 text-center mb-4" role="alert">
+        <p className="text-destructive text-center mb-4" role="alert">
           {error}
         </p>
       )}
 
       <Button
-        className="w-full bg-yellow-500 hover:bg-yellow-600"
+        className="w-full bg-secondary hover:bg-yellow-600"
         onClick={handleLogin}
         disabled={loading}
       >
         {loading ? "Carregando..." : "Entrar"}
       </Button>
 
-      <p className="mt-6 text-center text-gray-600">
+      <p className="mt-6 text-center">
         Não tem conta?{" "}
         <Link
           href="/signup"
-          className="text-yellow-600 font-semibold hover:underline"
+          className="text-secondary font-semibold hover:underline"
         >
           Cadastre-se
         </Link>
