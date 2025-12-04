@@ -46,23 +46,23 @@ export async function performLogin(email: string, password: string): Promise<{ s
   try {
     const response = await authService.signin({ email, password });
     
-    if (response.jwtToken && response.user) {
-      
+    if (response.token && response.id) {
       const userToStore: User = {
-        id: response.user.id,
-        name: response.user.name,
-        email: response.user.email,
-        user_type: response.user.user_type,
+        id: response.id.toString(),
+        name: response.name,
+        email: response.email,
+        user_type: response.role.toLowerCase() as AuthServiceUserType,
       };
      
-      storeSession(response.jwtToken, userToStore); 
+      storeSession(response.token, userToStore); 
       return { success: true, user: userToStore };
     }
     return { success: false, message: "Resposta de login incompleta." };
-  } catch (error: any) { 
-    console.error("Login failed:", error.message);
+  } catch (error: unknown) { 
+    const message = error instanceof Error ? error.message : 'Erro de rede ou servidor.';
+    console.error("Login failed:", message);
     logoutUser();
-    return { success: false, message: error.message || 'Erro de rede ou servidor.' };
+    return { success: false, message };
   }
 }
 
@@ -71,21 +71,22 @@ export async function performRegister(data: AuthServiceSignUpData): Promise<{ su
   try {
     const response = await authService.signup(data);
     
-    if (response.jwtToken && response.user) {
+    if (response.token && response.id) {
       const userToStore: User = {
-        id: response.user.id,
-        name: response.user.name,
-        email: response.user.email,
-        user_type: response.user.user_type,
+        id: response.id.toString(),
+        name: response.name,
+        email: response.email,
+        user_type: response.role.toLowerCase() as AuthServiceUserType,
       };
       
-      storeSession(response.jwtToken, userToStore);
+      storeSession(response.token, userToStore);
       return { success: true, user: userToStore };
     }
     return { success: false, message: "Resposta de registro incompleta." };
-  } catch (error: any) { 
-    console.error("Registration failed:", error.message);
-    return { success: false, message: error.message || 'Erro de rede ou servidor.' };
+  } catch (error: unknown) { 
+    const message = error instanceof Error ? error.message : 'Erro de rede ou servidor.';
+    console.error("Registration failed:", message);
+    return { success: false, message };
   }
 }
 

@@ -2,15 +2,12 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
-  performLogin,
-  performRegister,
-  logoutUser,
-  getCurrentUser,
-  User,
-  UserType
+  performLogin,
+  performRegister,
+  logoutUser,
+  getCurrentUser,
+  User
 } from '../lib/auth';
-
-
 import type { SignUpData } from '../lib/api/authservice';
 
 interface AuthContextType {
@@ -48,52 +45,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    loadUserFromLocalStorage();
+ loadUserFromLocalStorage();
   }, []); 
 
  
-  const login = useCallback(async (email: string, password: string) => {
-    setIsLoading(true); 
-    try {
-      const result = await performLogin(email, password); 
-      if (result.success && result.user) {
-        setUser(result.user); 
-      } else {
-        console.error("Login falhou:", result.message);
-        setUser(null); 
-        throw new Error(result.message || "Login falhou"); 
-      }
-    } catch (error: any) {
-      console.error("Erro no login:", error);
-      setUser(null); 
-      throw error; 
-    } finally {
-      setIsLoading(false); 
-    }
-  }, []);
-
- 
-  const register = useCallback(async (data: SignUpData) => {
-    setIsLoading(true); 
-    try {
-      const result = await performRegister(data); 
-      if (result.success && result.user) {
-        setUser(result.user); 
-      } else {
-        console.error("Registro falhou:", result.message);
-        setUser(null);
-        throw new Error(result.message || "Registro falhou");
-      }
-    } catch (error: any) {
-      console.error("Erro no registro:", error);
-      setUser(null);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  
+  const login = useCallback(async (email: string, password: string) => {
+    setIsLoading(true); 
+    try {
+      const result = await performLogin(email, password); 
+      if (result.success && result.user) {
+        setUser(result.user); 
+      } else {
+        console.error("Login falhou:", result.message);
+        setUser(null); 
+        throw new Error(result.message || "Login falhou"); 
+      }
+    } catch (error: unknown) {
+      console.error("Erro no login:", error);
+      setUser(null); 
+      throw error; 
+    } finally {
+      setIsLoading(false); 
+    }
+  }, []); 
+  const register = useCallback(async (data: SignUpData) => {
+    setIsLoading(true); 
+    try {
+      const result = await performRegister(data); 
+      if (result.success && result.user) {
+        setUser(result.user); 
+      } else {
+        console.error("Registro falhou:", result.message);
+        setUser(null);
+        throw new Error(result.message || "Registro falhou");
+      }
+    } catch (error: unknown) {
+      console.error("Erro no registro:", error);
+      setUser(null);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);  
   const logout = useCallback(() => {
     logoutUser(); 
     setUser(null); 

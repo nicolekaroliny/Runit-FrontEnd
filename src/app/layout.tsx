@@ -1,8 +1,9 @@
 import "./globals.css";
 import "leaflet/dist/leaflet.css"; // se você usa Leaflet nas outras páginas
-import Header from "./components/Header";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import NavBar from "./components/navBar/NavBar";
+import { AuthProvider } from "@/context/authcontext";
 
 export const metadata: Metadata = {
   title: "Runit",
@@ -18,19 +19,18 @@ const poppins = Poppins({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body className={`${poppins.variable} min-h-screen bg-white flex flex-col`}>
-        {/* aplica a fonte no site todo */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html:
-              `body, h1, h2, h3, h4, h5, h6, p, a, span, label, input, button, div { font-family: var(--font-poppins), sans-serif; font-weight: 700; }`,
-          }}
-        />
-        {/* header global */}
-                <Header />
-        {/* conteúdo da página */}
-        {children}
+    <html lang="pt-BR" className={poppins.className}>
+      <body>
+        <AuthProvider>
+          <NavBar/>
+          <div className="pt-24">
+            <div className="w-full">
+              <div className="min-h-screen bg-background dark:bg-black">
+                {children}
+              </div>
+            </div>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
