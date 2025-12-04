@@ -24,6 +24,10 @@
   --color-ring: var(--ring);
   --color-black: var(--black);
   --color-white: var(--white);
+  --color-navbar-primary: var(--navbar-primary);
+  --color-navbar-foreground: var(--navbar-foreground);
+  --color-navbar-muted-foreground: var(--navbar-muted-foreground);
+  --color-navbar-hover: var(--navbar-hover);
   --animate-wiggle: wiggle 1s ease-in-out infinite;  
   --animate-scroll: scroll 100s linear infinite;
   --animate-blink: blink 1.1s step-end infinite;
@@ -118,6 +122,11 @@
   --input: #E2E0DD;
   --ring: #266fce;
   --radius: 0.5rem;
+
+  --navbar-primary: #1E5AA8;
+  --navbar-foreground: #FCFCFC;
+  --navbar-muted-foreground: #E6EDF7;
+  --navbar-hover: #266fce;
 }
 
 
@@ -153,6 +162,11 @@
   --input: #272727;
   --ring: #5ea3ff;
   --radius: 0.5rem;
+
+  --navbar-primary: #1E5AA8;
+  --navbar-foreground: #FCFCFC;
+  --navbar-muted-foreground: #C9D9F2;
+  --navbar-hover: #2B6FD6;
 }
 
 body {
