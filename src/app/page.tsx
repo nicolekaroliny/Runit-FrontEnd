@@ -1,11 +1,11 @@
+import BlogList from '@/app/components/BlogList';
 
 export default function Home() {
   return (
-    <main className="flex justify-center items-center flex-col mx-auto">
-     <div id="hi" className="w-full mt-24 md:mt-0">
-        <div className="relative min-h-screen flex flex-col items-center justify-center bg-background dark:bg-black overflow-hidden">
-        </div>
-      </div>
-    </main>
+    <BlogList
+      title="Blog Runit: Desempenho e Tecnologia"
+      subtitle="Notícias, dicas e análises sobre corrida, saúde e o mundo da Runit."
+      showSidebar={true}
+    />
   );
 }
