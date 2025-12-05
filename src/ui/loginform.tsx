@@ -62,7 +62,7 @@ export function LoginForm() {
         default:
           router.push("/");
       }
-    } catch (err) {
+    } catch {
       setError("Erro ao fazer login.");
     } finally {
       setLoading(false);

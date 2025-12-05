@@ -40,21 +40,21 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col lg:flex-row w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden bg-card">
+    <div className="min-h-screen flex items-center justify-center py-4 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col lg:flex-row w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden bg-card">
 
         {/* Painel Esquerdo - Branding */}
-        <div className="w-full lg:w-2/5 flex flex-col items-center justify-center p-6 lg:p-8 bg-navbar-primary">
+        <div className="w-full lg:w-2/5 flex flex-col items-center justify-center p-4 lg:p-6 bg-navbar-primary">
           
           {/* Logo RUNIT */}
-          <div className="bg-transparent w-56 h-20 rounded-lg flex items-center justify-center mb-8">
-            <div className="relative w-44 h-14">
+          <div className="bg-transparent w-40 h-14 rounded-lg flex items-center justify-center mb-4">
+            <div className="relative w-32 h-10">
               <LogoNav/>
             </div>
           </div>
 
           {/* Runner Animation */}
-          <div className="relative w-48 h-48 mb-8 animate-wiggle">
+          <div className="relative w-32 h-32 mb-4 animate-wiggle">
             <Image
               src="/images/runner2.png"
               alt="Pessoa correndo na linha de chegada"
@@ -65,15 +65,15 @@ export default function SignIn() {
           </div>
 
           {/* Slogan */}
-          <p className="text-lg font-bold text-navbar-foreground text-center mb-4">
+          <p className="text-base font-bold text-navbar-foreground text-center mb-2">
             Continue sua jornada!
           </p>
-          <p className="text-sm text-navbar-foreground/80 text-center px-4">
+          <p className="text-xs text-navbar-foreground/80 text-center px-4">
             Acompanhe seu progresso e alcance seus objetivos de corrida.
           </p>
 
           {/* Não tem conta? */}
-          <div className="mt-8 text-center">
+          <div className="mt-4 text-center">
             <p className="text-navbar-foreground text-sm">
               Não tem uma conta?{' '}
               <Link href="/signup" className="font-bold text-secondary hover:text-secondary/80 transition-colors">
@@ -84,10 +84,10 @@ export default function SignIn() {
         </div>
 
         {/* Painel Direito - Formulário */}
-        <div className="w-full lg:w-3/5 p-8 lg:p-12 bg-card">
-          <div className="space-y-6">
+        <div className="w-full lg:w-3/5 p-4 lg:p-6 bg-card">
+          <div className="space-y-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Bem-vindo de volta</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-1">Bem-vindo de volta</h1>
               <p className="text-muted-foreground">Faça login para continuar</p>
             </div>
 
