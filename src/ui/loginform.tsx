@@ -6,24 +6,25 @@ import Link from "next/link";
 import { Input } from "@/ui/input";
 import { Button } from "./button";
 import { Label } from "./label";
-
-const API_BASE_URL = "http://localhost:3000/api";
-
-interface User {
-  email: string;
-  role: "owner" | "user" | "admin";
-}
+import { useAuth } from "@/context/authcontext";
 
 export function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
+    // Validação básica
     if (!email || !password) {
       setError("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Por favor, digite um email válido.");
       return;
     }
 
@@ -31,50 +32,41 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Erro ao fazer login.");
-        setLoading(false);
-        return;
+      console.log("📝 Tentando login com email:", email);
+      await login(email, password);
+      console.log("✅ Login bem-sucedido! Token persistido. Redirecionando...");
+      
+      // Sem delay - redireciona direto
+      router.push("/dashboard");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Erro ao fazer login.";
+      console.error("❌ Erro ao fazer login:", errorMessage);
+      
+      // Tratamento de erro específico conforme o backend
+      if (errorMessage.includes("Email ou senha inválidos")) {
+        setError("Email ou senha inválidos. Tente novamente.");
+      } else if (errorMessage.includes("não foi possível conectar")) {
+        setError("Servidor não está disponível. Tente mais tarde.");
+      } else if (errorMessage.includes("Usuário não encontrado")) {
+        setError("Usuário não encontrado. Verifique o email.");
+      } else if (errorMessage.includes("validação")) {
+        setError("Dados inválidos. Verifique e tente novamente.");
+      } else {
+        setError(errorMessage);
       }
-
-      const { token, user } = (await response.json()) as {
-        token: string;
-        user: User;
-      };
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      switch (user.role) {
-        case "admin":
-          router.push("/home page/admin");
-          break;
-        case "user":
-          router.push("/home page/user_type");
-          break;
-        default:
-          router.push("/");
-      }
-    } catch {
-      setError("Erro ao fazer login.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="max-w-md mx-auto mt-20 bg-background p-8 rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold mb-6 text-secondary text-center">
-        Entrar no Runit
-      </h2>
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
 
+  return (
+    <div className="w-full space-y-6">
       <div className="mb-5">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -83,6 +75,8 @@ export function LoginForm() {
           placeholder="seuemail@exemplo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={loading}
           required
         />
       </div>
@@ -95,33 +89,37 @@ export function LoginForm() {
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={loading}
           required
         />
       </div>
 
       {error && (
-        <p className="text-destructive text-center mb-4" role="alert">
+        <p className="text-red-600 bg-red-50 p-3 rounded-lg text-sm font-medium" role="alert">
           {error}
         </p>
       )}
 
       <Button
-        className="w-full bg-secondary hover:bg-yellow-600"
+        className="w-full bg-secondary hover:bg-secondary/90 text-foreground"
         onClick={handleLogin}
         disabled={loading}
       >
         {loading ? "Carregando..." : "Entrar"}
       </Button>
 
-      <p className="mt-6 text-center">
-        Não tem conta?{" "}
-        <Link
-          href="/signup"
-          className="text-secondary font-semibold hover:underline"
-        >
-          Cadastre-se
-        </Link>
-      </p>
+      <div className="text-center space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Não tem conta?{" "}
+          <Link
+            href="/signup"
+            className="text-secondary font-semibold hover:underline"
+          >
+            Cadastre-se
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

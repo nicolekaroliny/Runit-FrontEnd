@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { AuthProvider } from "@/context/authcontext";
 import ConditionalNavBar from "@/app/components/ConditionalNavBar";
+import { AuthDebug } from "@/components/AuthDebug";
 
 export const metadata: Metadata = {
   title: "Runit",
@@ -19,13 +20,14 @@ const poppins = Poppins({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={poppins.className}>
+    <html lang="pt-BR" className={poppins.className} suppressHydrationWarning>
       <body>
         <AuthProvider>
           <ConditionalNavBar />
           <div className="w-full min-h-screen bg-background dark:bg-black">
             {children}
           </div>
+          <AuthDebug />
         </AuthProvider>
       </body>
     </html>
