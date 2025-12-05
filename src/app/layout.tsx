@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { AuthProvider } from "@/context/authcontext";
 import ConditionalNavBar from "@/app/components/ConditionalNavBar";
+import FooterWrapper from "@/app/components/FooterWrapper";
 import { AuthDebug } from "@/components/AuthDebug";
 
 export const metadata: Metadata = {
@@ -24,11 +25,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <ConditionalNavBar />
-          {/* pt-24 para deixar espaço da NavBar fixa */}
+
           <div className="w-full min-h-screen bg-background dark:bg-black pt-24">
             {children}
           </div>
+
           <AuthDebug />
+
+          <FooterWrapper />
         </AuthProvider>
       </body>
     </html>
