@@ -156,13 +156,27 @@ export function SignupForm() {
     setError(null);
 
     try {
+      console.log("📝 Iniciando cadastro...");
       await register(dataToSend);
-      router.push("/dashboard"); 
+      console.log("✅ Cadastro bem-sucedido! Token persistido. Redirecionando...");
+      
+      // Sem delay - redireciona direto
+      router.push("/dashboard");
 
     } catch (err) {
-      console.error("Erro na tentativa de cadastro:", err);
-      const error = err as Error;
-      setError(error.message || "Erro desconhecido ao cadastrar. Verifique o servidor.");
+      const errorMessage = err instanceof Error ? err.message : "Erro desconhecido ao cadastrar.";
+      console.error("❌ Erro no cadastro:", errorMessage);
+      
+      // Tratamento de erro específico conforme o backend
+      if (errorMessage.includes("409") || errorMessage.includes("já existe") || errorMessage.includes("Email já cadastrado")) {
+        setError("Este email já está cadastrado. Tente fazer login ou use outro email.");
+      } else if (errorMessage.includes("400") || errorMessage.includes("validação") || errorMessage.includes("Dados inválidos")) {
+        setError("Dados inválidos. Verifique todos os campos e tente novamente.");
+      } else if (errorMessage.includes("não foi possível conectar")) {
+        setError("Servidor não está disponível. Tente mais tarde.");
+      } else {
+        setError(errorMessage || "Erro ao cadastrar. Verifique o servidor.");
+      }
     } finally {
       setLoading(false);
     }
