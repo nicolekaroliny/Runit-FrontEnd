@@ -24,7 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <ConditionalNavBar />
-          <div className="w-full min-h-screen bg-background dark:bg-black">
+          {/* pt-24 para deixar espaço da NavBar fixa */}
+          <div className="w-full min-h-screen bg-background dark:bg-black pt-24">
             {children}
           </div>
           <AuthDebug />
