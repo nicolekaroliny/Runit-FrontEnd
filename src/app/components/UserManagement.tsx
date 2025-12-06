@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Mail, User as UserIcon, Calendar } from 'lucide-react';
-import { User, UserCreationRequest, UserUpdateRequest } from '@/types/user.types';
+import { Search, Plus, Edit2, Trash2, Mail, User as UserIcon, Calendar, Shield } from 'lucide-react';
+import { User, UserCreationRequest, UserUpdateRequest, MembershipType } from '@/types/user.types';
 import { UserService } from '@/lib/api/userservice';
+import { MembershipTypeService } from '@/lib/api/membershiptypeservice';
 import UserForm from './UserForm';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
+  const [membershipTypes, setMembershipTypes] = useState<MembershipType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -18,7 +20,17 @@ export default function UserManagement() {
 
   useEffect(() => {
     loadUsers();
+    loadMembershipTypes();
   }, []);
+
+  const loadMembershipTypes = async () => {
+    try {
+      const data = await MembershipTypeService.getAllMembershipTypes();
+      setMembershipTypes(data || []);
+    } catch (err) {
+      console.error('Erro ao carregar tipos de membership:', err);
+    }
+  };
 
   const loadUsers = async () => {
     try {
@@ -73,7 +85,17 @@ export default function UserManagement() {
       setError(null);
 
       if (editingUser) {
-        await UserService.updateUser(editingUser.id, data as UserUpdateRequest);
+        // Check if role or membership changed - use admin endpoint
+        const hasRoleOrMembershipChange = 
+          ('userRole' in data && data.userRole !== editingUser.userRole) ||
+          ('membershipTypeId' in data && data.membershipTypeId && 
+           data.membershipTypeId !== editingUser.membershipType?.id);
+        
+        if (hasRoleOrMembershipChange) {
+          await UserService.updateUserAsAdmin(editingUser.id, data as UserUpdateRequest);
+        } else {
+          await UserService.updateUser(editingUser.id, data as UserUpdateRequest);
+        }
         setSuccess('Usuário atualizado com sucesso');
       } else {
         await UserService.createUser(data as UserCreationRequest);
@@ -254,12 +276,15 @@ export default function UserManagement() {
                   </div>
                 </div>
 
-                {/* Distância */}
-                <div>
-                  <p className="text-xs text-muted-foreground">Distância Total</p>
-                  <p className="text-sm font-medium text-foreground">
-                    {user.totalRunningDistance ? `${user.totalRunningDistance.toFixed(2)} km` : '-'}
-                  </p>
+                {/* Membership */}
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Plano</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {user.membershipType?.name || 'Sem plano'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -295,6 +320,7 @@ export default function UserManagement() {
       {showForm && (
         <UserForm
           user={editingUser}
+          membershipTypes={membershipTypes}
           onSubmit={handleSubmit}
           onClose={() => {
             setShowForm(false);

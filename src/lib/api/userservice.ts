@@ -78,11 +78,33 @@ export const UserService = {
     }
   },
 
-  // Update a user
+  // Update a user (profile update - user endpoint)
   async updateUser(id: number, data: UserUpdateRequest): Promise<User> {
     const API_BASE_URL = getApiBaseUrl();
     try {
       const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `Erro ao atualizar usuário: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error: unknown) {
+      console.error('Erro ao atualizar usuário:', error);
+      throw error;
+    }
+  },
+
+  // Update a user as admin (role and membership changes)
+  async updateUserAsAdmin(id: number, data: UserUpdateRequest): Promise<User> {
+    const API_BASE_URL = getApiBaseUrl();
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${id}/admin`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(data),

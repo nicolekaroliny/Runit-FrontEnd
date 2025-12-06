@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, UserCreationRequest, UserUpdateRequest, Gender } from '@/types/user.types';
+import { User, UserCreationRequest, UserUpdateRequest, Gender, MembershipType } from '@/types/user.types';
 import { X } from 'lucide-react';
 
 interface UserFormProps {
   user?: User | null;
+  membershipTypes?: MembershipType[];
   onSubmit: (data: UserCreationRequest | UserUpdateRequest) => Promise<void>;
   onClose: () => void;
   isLoading: boolean;
 }
 
-export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFormProps) {
+export default function UserForm({ user, membershipTypes = [], onSubmit, onClose, isLoading }: UserFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     lastName: '',
@@ -22,6 +23,8 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
     timezone: '',
     locale: '',
     profilePictureUrl: '',
+    userRole: 'USER' as 'ADMIN' | 'EDITOR' | 'USER',
+    membershipTypeId: '',
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -38,6 +41,8 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
         timezone: user.timezone || '',
         locale: user.locale || '',
         profilePictureUrl: user.profilePictureUrl || '',
+        userRole: user.userRole,
+        membershipTypeId: user.membershipType?.id?.toString() || '',
       });
     }
   }, [user]);
@@ -86,6 +91,8 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
           timezone: formData.timezone,
           locale: formData.locale,
           profilePictureUrl: formData.profilePictureUrl,
+          userRole: formData.userRole,
+          membershipTypeId: formData.membershipTypeId ? parseInt(formData.membershipTypeId) : undefined,
         };
         await onSubmit(updateData);
       } else {
@@ -107,9 +114,10 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
     }
   };
 
-  const genderOptions: Gender[] = ['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'];
+  const genderOptions: Gender[] = ['M', 'F', 'O'];
   const localeOptions = ['pt-BR', 'en-US', 'es-ES', 'fr-FR', 'de-DE'];
   const timezoneOptions = ['America/Sao_Paulo', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+  const roleOptions = ['USER', 'EDITOR', 'ADMIN'] as const;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -252,7 +260,7 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
                 <option value="">Selecione...</option>
                 {genderOptions.map((opt) => (
                   <option key={opt} value={opt}>
-                    {opt === 'MALE' ? 'Masculino' : opt === 'FEMALE' ? 'Feminino' : opt === 'OTHER' ? 'Outro' : 'Prefiro não informar'}
+                    {opt === 'M' ? 'Masculino' : opt === 'F' ? 'Feminino' : 'Outro'}
                   </option>
                 ))}
               </select>
@@ -318,6 +326,57 @@ export default function UserForm({ user, onSubmit, onClose, isLoading }: UserFor
               placeholder="https://example.com/photo.jpg"
             />
           </div>
+
+          {/* Admin Section: Role and Membership (only for editing) */}
+          {user && (
+            <>
+              <hr className="my-4 border-border" />
+              <p className="text-sm font-semibold text-foreground mb-3">Configurações de Admin</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* User Role */}
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Papel (Role)
+                  </label>
+                  <select
+                    name="userRole"
+                    value={formData.userRole}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {roleOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt === 'USER' ? 'Usuário' : opt === 'EDITOR' ? 'Editor' : 'Administrador'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Membership Type */}
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Tipo de Membership
+                  </label>
+                  <select
+                    name="membershipTypeId"
+                    value={formData.membershipTypeId}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Selecione...</option>
+                    {membershipTypes.map((mt) => (
+                      <option key={mt.id} value={mt.id}>
+                        {mt.name} {mt.monthlyPrice && mt.monthlyPrice > 0 ? `- R$ ${mt.monthlyPrice}/mês` : '(Gratuito)'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 justify-end pt-6 border-t border-border">
