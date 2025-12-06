@@ -6,6 +6,7 @@ import { getAuthToken } from '@/lib/auth';
 import CategoryManagement from '@/app/components/CategoryManagement';
 import BlogManagement from '@/app/components/BlogManagement';
 import RaceManagement from '@/app/components/RaceManagement';
+import UserManagement from '@/app/components/UserManagement';
 
 type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'analytics' | 'settings';
 
@@ -247,21 +248,7 @@ export default function AdminDashboard() {
 
           {activeSection === 'races' && <RaceManagement />}
 
-          {activeSection === 'users' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-3xl font-bold text-foreground">Gerenciar Usuários</h2>
-                <p className="text-muted-foreground mt-1">
-                  Administre usuários e permissões da plataforma
-                </p>
-              </div>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-                <p className="text-yellow-800 text-lg">
-                  🚧 Esta funcionalidade está em desenvolvimento
-                </p>
-              </div>
-            </div>
-          )}
+          {activeSection === 'users' && <UserManagement />}
 
           {activeSection === 'analytics' && (
             <div className="space-y-6">
