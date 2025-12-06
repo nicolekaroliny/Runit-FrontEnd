@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { getAuthToken } from '@/lib/auth';
 import CategoryManagement from '@/app/components/CategoryManagement';
 import BlogManagement from '@/app/components/BlogManagement';
+import RaceManagement from '@/app/components/RaceManagement';
 
-type AdminSection = 'dashboard' | 'categories' | 'blog' | 'users' | 'analytics' | 'settings';
+type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'analytics' | 'settings';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -84,6 +85,17 @@ export default function AdminDashboard() {
               }`}
             >
               Gerenciar Blog
+            </button>
+            
+            <button
+              onClick={() => setActiveSection('races')}
+              className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                activeSection === 'races'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              Corridas
             </button>
             
             <button
@@ -180,6 +192,16 @@ export default function AdminDashboard() {
                 </div>
 
                 <div
+                  onClick={() => setActiveSection('races')}
+                  className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <h2 className="text-2xl font-bold text-foreground mb-3">Gerenciar Corridas</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Crie, edite e delete corridas
+                  </p>
+                </div>
+
+                <div
                   onClick={() => setActiveSection('users')}
                   className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-pointer"
                 >
@@ -222,6 +244,8 @@ export default function AdminDashboard() {
           {activeSection === 'categories' && <CategoryManagement />}
 
           {activeSection === 'blog' && <BlogManagement />}
+
+          {activeSection === 'races' && <RaceManagement />}
 
           {activeSection === 'users' && (
             <div className="space-y-6">

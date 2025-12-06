@@ -3,7 +3,18 @@
 import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
-import type { Corrida } from "@/app/corridas/data";
+
+export type RacePoint = {
+  id: string;
+  title: string;
+  dateLabel?: string;
+  distanceLabel?: string;
+  locationLabel?: string;
+  lat: number;
+  lng: number;
+  link?: string;
+  status?: string;
+};
 
 // NÃO precisamos mais do mergeOptions com imports de PNG
 // L.Icon.Default.mergeOptions({ ... });
@@ -32,26 +43,26 @@ function FlyTo({ center }: { center?: [number, number] }) {
 }
 
 export default function MapView({
-  corridas,
+  points,
   selectedId,
   onSelect,
   height = "78vh",
 }: {
-  corridas: Corrida[];
+  points: RacePoint[];
   selectedId?: string;
   onSelect?: (id: string) => void;
   height?: string | number;
 }) {
   const center = useMemo(() => {
-    const sel = corridas.find((c) => c.id === selectedId);
+    const sel = points.find((c) => c.id === selectedId);
     return sel ? ([sel.lat, sel.lng] as [number, number]) : undefined;
-  }, [selectedId, corridas]);
+  }, [selectedId, points]);
 
   const bounds = useMemo(() => {
     const b = L.latLngBounds([]);
-    corridas.forEach((c) => b.extend([c.lat, c.lng]));
+    points.forEach((c) => b.extend([c.lat, c.lng]));
     return b;
-  }, [corridas]);
+  }, [points]);
 
   return (
     <MapContainer
@@ -68,7 +79,7 @@ export default function MapView({
 
       {center && <FlyTo center={center} />}
 
-      {corridas.map((c) => {
+      {points.map((c) => {
         const isActive = c.id === selectedId;
         return (
           <Marker
@@ -79,9 +90,9 @@ export default function MapView({
             eventHandlers={{ click: () => onSelect?.(c.id) }}
           >
             <Popup>
-              <strong>{c.titulo}</strong>
+              <strong>{c.title}</strong>
               <br />
-              {c.local}
+              {c.locationLabel}
             </Popup>
           </Marker>
         );

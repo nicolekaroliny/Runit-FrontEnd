@@ -1,174 +1,338 @@
 "use client";
-import Image from "next/image";
-import { ArrowRight } from "lucide-react";
-import { useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
-import Head from "next/head";
-import Link from "next/link";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { corridas } from "./data";
+import type { Race } from "@/types/race.types";
+import { RaceService } from "@/lib/api/raceservice";
+import { corridas as staticCorridas } from "./data";
+import type { Corrida } from "./data";
+import type { RacePoint } from "../components/MapView";
 
 const MapView = dynamic(() => import("../components/MapView"), { ssr: false });
 
-function getDatePartsPT(dataHora: string) {
-  const m = dataHora.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-  const months = ["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
-  if (!m) return { day: "--", mon: "--" };
-  return { day: m[1], mon: months[parseInt(m[2], 10) - 1] || "--" };
+const monthAbbr = [
+  "JAN",
+  "FEV",
+  "MAR",
+  "ABR",
+  "MAI",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SET",
+  "OUT",
+  "NOV",
+  "DEZ",
+];
+
+function getDateParts(dateValue?: string) {
+  if (!dateValue) return { day: "--", mon: "--" };
+
+  const isoCandidate = new Date(dateValue);
+  if (!Number.isNaN(isoCandidate.getTime())) {
+    return {
+      day: isoCandidate.getDate().toString().padStart(2, "0"),
+      mon: monthAbbr[isoCandidate.getMonth()] || "--",
+    };
+  }
+
+  const match = dateValue.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (match) {
+    const [, day, month] = match;
+    return { day, mon: monthAbbr[parseInt(month, 10) - 1] || "--" };
+  }
+
+  return { day: "--", mon: "--" };
+}
+
+function formatDateLabel(dateValue?: string) {
+  if (!dateValue) return "Data não informada";
+
+  const parsed = new Date(dateValue);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toLocaleDateString("pt-BR", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+    });
+  }
+
+  const match = dateValue.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (match) return match[0];
+
+  return dateValue;
+}
+
+function mapApiRaceToPoint(race: Race): RacePoint {
+  return {
+    id: race.id.toString(),
+    title: race.name,
+    dateLabel: formatDateLabel(race.raceDate),
+    distanceLabel: `${race.raceDistanceKm} km`,
+    locationLabel: `${race.city}, ${race.state}`,
+    lat: race.latitude,
+    lng: race.longitude,
+    link: race.registrationUrl || undefined,
+    status: race.status,
+  };
+}
+
+function mapStaticToPoint(race: Corrida): RacePoint {
+  return {
+    id: race.id,
+    title: race.titulo,
+    dateLabel: race.dataHora,
+    distanceLabel: race.distancias,
+    locationLabel: race.local,
+    lat: race.lat,
+    lng: race.lng,
+    link: race.link || undefined,
+    status: race.status,
+  };
 }
 
 export default function CorridasPage() {
-  const [selectedId, setSelectedId] = useState<string | undefined>(corridas[0]?.id);
-  const selected = useMemo(() => corridas.find((c) => c.id === selectedId), [selectedId]);
-  const pathname = usePathname();
+  const [points, setPoints] = useState<RacePoint[]>([]);
+  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
+
+  const hydrateFromStatic = useCallback(() => {
+    const fallback = staticCorridas.map(mapStaticToPoint);
+    setPoints(fallback);
+    setSelectedId(fallback[0]?.id);
+    setUsingFallback(true);
+  }, []);
+
+  const loadRaces = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setUsingFallback(false);
+
+      const data = await RaceService.getAllRaces();
+      const mapped = (data || [])
+        .map(mapApiRaceToPoint)
+        .filter((race) => Number.isFinite(race.lat) && Number.isFinite(race.lng));
+
+      if (mapped.length > 0) {
+        setPoints(mapped);
+        setSelectedId(mapped[0]?.id);
+        return;
+      }
+
+      setError("Nenhuma corrida encontrada. Exibindo dados locais.");
+      hydrateFromStatic();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erro ao carregar corridas";
+      setError(message);
+      hydrateFromStatic();
+    } finally {
+      setLoading(false);
+    }
+  }, [hydrateFromStatic]);
+
+  useEffect(() => {
+    loadRaces();
+  }, [loadRaces]);
+
+  const selected = useMemo(() => points.find((race) => race.id === selectedId), [points, selectedId]);
 
   return (
-    <>
-      <Head>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" />
-        <style>{`body, h1, h2, h3, h4, h5, h6, p, a, span, label, input, button, div { font-family: 'Poppins', sans-serif !important; font-weight: 700 !important; }`}</style>
-      </Head>
-      <div className="min-h-screen bg-white flex flex-col p-0">
-        
-        <main className="px-8 py-8 max-w-[1400px] mx-auto">
-          <h1 className="text-4xl font-extrabold text-[var(--runit-strong)] mb-6">Corridas</h1>
+    <div className="bg-background min-h-screen">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-10">
+        <header className="mb-10">
+          <p className="uppercase tracking-[0.2em] text-xs font-semibold text-primary">Agenda</p>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground mt-1">Corridas</h1>
+          <p className="text-lg text-muted-foreground mt-2 max-w-3xl">
+            Encontre provas próximas, visualize no mapa e acesse links de inscrição em tempo real.
+          </p>
 
-          <div className="grid grid-cols-12 gap-8">
-            {/* LISTA (esquerda) — estilo “duas cápsulas” azuis */}
-            <aside className="col-span-12 lg:col-span-4">
-              <div className="flex flex-col gap-4 max-h-[78vh] overflow-y-auto pr-2">
-                {corridas.map((c) => {
-                  const { day, mon } = getDatePartsPT(c.dataHora);
-                  const active = c.id === selectedId;
+          <div className="flex flex-wrap gap-3 mt-4 items-center">
+            {loading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="inline-block h-3 w-3 rounded-full bg-primary animate-pulse" />
+                Atualizando corridas...
+              </div>
+            )}
+
+            {usingFallback && (
+              <span className="text-xs font-medium px-3 py-1 rounded-full bg-muted text-muted-foreground border border-border">
+                Modo offline (dados locais)
+              </span>
+            )}
+
+            {error && (
+              <span className="text-xs font-medium px-3 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/30">
+                {error}
+              </span>
+            )}
+          </div>
+        </header>
+
+        <div className="grid grid-cols-12 gap-6 lg:gap-8">
+          <aside className="col-span-12 lg:col-span-4">
+            <div className="bg-card border border-border rounded-2xl p-4 shadow-sm h-full">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">Próximas provas</h2>
+                  <p className="text-sm text-muted-foreground">Selecione para ver no mapa</p>
+                </div>
+                <button
+                  onClick={loadRaces}
+                  className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
+                  disabled={loading}
+                >
+                  Atualizar
+                </button>
+              </div>
+
+              <div className="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
+                {points.map((race) => {
+                  const { day, mon } = getDateParts(race.dateLabel);
+                  const active = race.id === selectedId;
 
                   return (
                     <button
-                      key={c.id}
-                      onClick={() => setSelectedId(c.id)}
-                      className="group w-full flex items-center gap-3"
+                      key={race.id}
+                      onClick={() => setSelectedId(race.id)}
+                      className={[
+                        "group w-full rounded-xl border transition",
+                        active
+                          ? "bg-primary text-primary-foreground border-primary shadow-md"
+                          : "bg-muted text-foreground border-border hover:border-primary/60 hover:shadow-sm",
+                      ].join(" ")}
                     >
-                      {/* Pílula da data (esquerda) */}
-                      <div
-                        className={[
-                          "w-16 h-16 rounded-xl",
-                          "bg-[var(--runit-primary)] text-white",
-                          "flex flex-col items-center justify-center leading-none",
-                          "shadow-sm group-hover:brightness-[1.05] transition",
-                          active ? "outline outline-2 outline-white/70 shadow" : "",
-                        ].join(" ")}
-                      >
-                        <span className="text-2xl font-extrabold">{day}</span>
-                        <span className="text-[11px] font-extrabold tracking-wide mt-0.5">
-                          {mon}
-                        </span>
-                      </div>
+                      <div className="flex items-center gap-3 px-3 py-3">
+                        <div
+                          className={[
+                            "w-14 h-14 rounded-lg flex flex-col items-center justify-center leading-none font-extrabold",
+                            active
+                              ? "bg-primary-foreground/20 text-primary-foreground"
+                              : "bg-background text-foreground border border-border",
+                          ].join(" ")}
+                        >
+                          <span className="text-xl">{day}</span>
+                          <span className="text-[11px] tracking-wide">{mon}</span>
+                        </div>
 
-                      {/* Pílula de conteúdo (direita) */}
-                      <div
-                        className={[
-                          "flex-1 rounded-2xl px-5 py-3",
-                          "bg-[var(--runit-primary)] text-white",
-                          "text-center shadow-sm group-hover:brightness-[1.05] transition",
-                          active ? "ring-2 ring-white/70" : "",
-                        ].join(" ")}
-                      >
-                        <div className="font-extrabold text-[15px] leading-tight">
-                          {c.titulo}
+                        <div className="flex-1 text-left">
+                          <div className="font-semibold text-base leading-tight line-clamp-2">
+                            {race.title}
+                          </div>
+                          <div
+                            className={[
+                              "text-sm leading-tight",
+                              active ? "text-primary-foreground/80" : "text-muted-foreground",
+                            ].join(" ")}
+                          >
+                            {race.locationLabel || "Local a definir"}
+                          </div>
+                          <div
+                            className={[
+                              "text-xs mt-1",
+                              active ? "text-primary-foreground/75" : "text-muted-foreground",
+                            ].join(" ")}
+                          >
+                            {race.distanceLabel || "Distância a definir"}
+                          </div>
                         </div>
-                        <div className="text-[13px] opacity-95 leading-tight">
-                          {c.local}
-                        </div>
-                        <div className="text-[12px] opacity-85 leading-tight">
-                          {c.distancias}
-                        </div>
+
+                        {race.status && (
+                          <span
+                            className={[
+                              "text-[11px] px-2 py-1 rounded-full font-semibold",
+                              active
+                                ? "bg-primary-foreground/20 text-primary-foreground"
+                                : "bg-background text-primary border border-primary/30",
+                            ].join(" ")}
+                          >
+                            {race.status}
+                          </span>
+                        )}
                       </div>
                     </button>
                   );
                 })}
-              </div>
-            </aside>
 
-            {/* MAPA (direita) + overlay */}
-            <section className="col-span-12 lg:col-span-8">
-              {/* fundo arredondado azul-claro como no mock */}
-              <div className="relative rounded-3xl p-3 bg-[var(--runit-map-card-bg)] shadow-sm">
-                <div className="overflow-hidden rounded-2xl">
-                  <MapView
-                    corridas={corridas}
-                    selectedId={selectedId}
-                    onSelect={setSelectedId}
-                    height="78vh"
-                  />
-                </div>
-
-                {/* CARD DE DETALHES SOBRE O MAPA */}
-                {selected && (
-                  <div className="absolute top-6 left-6 z-[10000] w-[400px]">
-                    <div className="rounded-2xl overflow-hidden shadow-2xl">
-                      {/* header azul (um pouco mais claro que o primary) */}
-                      <div className="bg-[var(--runit-primary-600)] text-white px-5 py-3">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-xl font-extrabold">Detalhes</h2>
-                          <button
-                            onClick={() => setSelectedId(undefined)}
-                            className="bg-white/20 hover:bg-white/30 rounded-full w-8 h-8 flex items-center justify-center"
-                            aria-label="Fechar"
-                            title="Fechar"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="p-5 bg-white">
-                        {/* “chips” com borda arredondada preta clara */}
-                        <div className="grid grid-cols-2 gap-3 mb-4">
-                          <div className="rounded-xl p-3 border border-[var(--runit-chip-border)]">
-                            <div className="text-xs text-[var(--runit-muted)]">Data</div>
-                            <div className="font-extrabold text-[var(--runit-strong)]">
-                              {selected.dataHora}
-                            </div>
-                          </div>
-                          <div className="rounded-xl p-3 border border-[var(--runit-chip-border)]">
-                            <div className="text-xs text-[var(--runit-muted)]">Local</div>
-                            <div className="font-extrabold text-[var(--runit-strong)]">
-                              {selected.local}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* título + distâncias (sem banner para ficar igual ao figma) */}
-                        <div className="mb-4">
-                          <h3 className="text-lg font-extrabold text-[var(--runit-strong)]">
-                            {selected.titulo}
-                          </h3>
-                          <div className="text-sm text-[var(--runit-muted)]">{selected.distancias}</div>
-                        </div>
-
-                        {/* botão Acessar (azul igual ao da pílula) */}
-                        {selected.link ? (
-                          <a
-                            href={selected.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block w-full text-center rounded-lg py-3 font-extrabold text-white bg-[var(--runit-primary)] hover:bg-[#174a8a] transition"
-                          >
-                            Acessar
-                          </a>
-                        ) : (
-                          <span className="block w-full text-center rounded-lg py-3 font-extrabold text-white bg-slate-400">
-                            Inscrições encerradas
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                {!loading && points.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-6">
+                    Nenhuma corrida para exibir.
+                  </p>
                 )}
               </div>
-            </section>
-          </div>
-        </main>
+            </div>
+          </aside>
+
+          <section className="col-span-12 lg:col-span-8">
+            <div className="relative bg-card border border-border rounded-2xl p-3 shadow-sm min-h-[400px]">
+              <div className="overflow-hidden rounded-xl border border-border/60">
+                <MapView points={points} selectedId={selectedId} onSelect={setSelectedId} height="72vh" />
+              </div>
+
+              {selected && (
+                <div className="absolute top-5 left-5 z-[1000] w-full max-w-md">
+                  <div className="rounded-xl overflow-hidden shadow-xl border border-border bg-card">
+                    <div className="bg-primary text-primary-foreground px-5 py-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide opacity-80">Corrida selecionada</p>
+                        <h3 className="text-xl font-bold leading-tight">{selected.title}</h3>
+                      </div>
+                      <button
+                        onClick={() => setSelectedId(undefined)}
+                        className="bg-primary-foreground/15 hover:bg-primary-foreground/25 text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center"
+                        aria-label="Fechar detalhes"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div className="p-5 space-y-4 bg-card">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-lg border border-border bg-muted/50 p-3">
+                          <p className="text-xs text-muted-foreground">Data</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {selected.dateLabel || "A definir"}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border border-border bg-muted/50 p-3">
+                          <p className="text-xs text-muted-foreground">Local</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {selected.locationLabel || "A definir"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-lg border border-border bg-muted/30 p-3">
+                        <p className="text-xs text-muted-foreground">Distâncias</p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {selected.distanceLabel || "Consultar organização"}
+                        </p>
+                      </div>
+
+                      {selected.link ? (
+                        <a
+                          href={selected.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block w-full text-center rounded-lg py-3 font-semibold text-primary-foreground bg-primary hover:opacity-90 transition"
+                        >
+                          Acessar inscrição
+                        </a>
+                      ) : (
+                        <span className="block w-full text-center rounded-lg py-3 font-semibold text-muted-foreground bg-muted border border-border">
+                          Link de inscrição indisponível
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
