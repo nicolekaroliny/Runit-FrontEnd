@@ -42,7 +42,7 @@ export default function Footer() {
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className="text-navbar-muted-foreground hover:text-navbar-foreground transition text-base"
+                  className="text-navbar-muted-foreground hover:text-secondary transition text-base"
                 >
                   {item.name}
                 </Link>
@@ -74,7 +74,7 @@ export default function Footer() {
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
                 href="#"
-                className="p-3 rounded-xl bg-navbar-hover/20 text-navbar-foreground hover:bg-secondary/20 transition shadow-md"
+                className="p-3 rounded-xl bg-navbar-hover/20 text-navbar-foreground hover:text-secondary hover:bg-secondary/20 transition shadow-md"
               >
                 <Icon size={22} />
               </motion.a>
