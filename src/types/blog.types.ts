@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface BlogPost {
   id: number;
   title: string;
   excerpt: string;
   content: string;
-  imageUrl?: string;  // frontend
-  thumbnailUrl?: string;  // backend
+  imageUrl?: string;  // frontend alias
+  thumbnailUrl?: string;  // backend field name
   category?: string;
   categories?: any[];  // backend
   createdAt: string;
+  publicationDate?: string;  // backend field
   slug: string;
   status?: string;
 }

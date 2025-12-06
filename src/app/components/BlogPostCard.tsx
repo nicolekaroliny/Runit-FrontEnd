@@ -17,7 +17,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
   return (
     <Link href={`/blog/${post.slug || post.id}`} className="group h-full">
-      <article className="h-full bg-card rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <article className="h-full bg-card  rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
         {/* Image Container */}
         <div className="relative w-full h-48 overflow-hidden bg-muted">
           <img

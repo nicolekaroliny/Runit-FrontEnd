@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Instagram, Linkedin, ArrowUp, Mail, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import LogoNav from "./navBar/LogoNav";
 
 export default function Footer() {
   return (
@@ -24,8 +25,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 px-6 py-12">
         
         {/* Logo */}
-        <div className="space-y-4">
-          <img src="/images/Logo.png" alt="Logo Runit" className="w-32" />
+        <div className="space-y-0 pr-16">
+          <LogoNav></LogoNav>
         </div>
 
         {/* Navegação */}
