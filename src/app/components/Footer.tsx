@@ -9,6 +9,7 @@ import LogoNav from "./navBar/LogoNav";
 export default function Footer() {
   return (
     <footer className="bg-navbar-primary text-navbar-foreground border-t border-border rounded-t-2xl shadow-2xl overflow-hidden">
+      
       {/* back to top */}
       <div className="flex justify-end px-6 pt-6">
         <motion.button
@@ -26,7 +27,7 @@ export default function Footer() {
         
         {/* Logo */}
         <div className="space-y-0 pr-16">
-          <LogoNav></LogoNav>
+          <LogoNav />
         </div>
 
         {/* Navegação */}
@@ -38,7 +39,6 @@ export default function Footer() {
               { name: "Corridas", href: "/corridas" },
               { name: "Notícias", href: "/blog" },
               { name: "Sobre nós", href: "/sobre" },
-              
             ].map((item) => (
               <li key={item.name}>
                 <Link
@@ -57,10 +57,10 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Contato</h3>
           <ul className="space-y-4 text-navbar-muted-foreground">
             <li className="flex items-center gap-3">
-              <Mail size={18}/> runit@suporte.com
+              <Mail size={18} /> runit@suporte.com
             </li>
             <li className="flex items-center gap-3">
-              <MapPin size={18}/> Recife - PE
+              <MapPin size={18} /> Recife - PE
             </li>
           </ul>
         </div>
@@ -68,13 +68,25 @@ export default function Footer() {
         {/* Redes sociais */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Redes Sociais</h3>
+
           <div className="flex items-center gap-4">
-            {[Instagram, Linkedin].map((Icon, i) => (
+            {[
+              {
+                icon: Instagram,
+                href: "https://www.instagram.com/unit_pe?igsh=dmR6em82YjAza25n",
+              },
+              {
+                icon: Linkedin,
+                href: "#",
+              },
+            ].map(({ icon: Icon, href }, i) => (
               <motion.a
                 key={i}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-3 rounded-xl bg-navbar-hover/20 text-navbar-foreground hover:text-secondary hover:bg-secondary/20 transition shadow-md"
               >
                 <Icon size={22} />

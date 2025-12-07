@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Users, Target, HeartHandshake } from "lucide-react";
 import React from "react";
+import TeamGrid from "./components/gridEquipe";
 
 export default function SobreNosPage() {
   return (
@@ -12,7 +13,7 @@ export default function SobreNosPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-4xl md:text-5xl font-bold text-center mb-12"
+        className="text-4xl md:text-5xl font-bold text-center mb-6"
       >
         Sobre Nós
       </motion.h1>
@@ -30,8 +31,7 @@ export default function SobreNosPage() {
       </motion.p>
 
       {/* Grid de seções */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
-        
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10 max-w-6xl mx-auto">
         {/* Quem somos */}
         <motion.div
           whileHover={{ scale: 1.03 }}
@@ -77,8 +77,10 @@ export default function SobreNosPage() {
             evoluírem em suas jornadas.
           </p>
         </motion.div>
-
       </div>
+
+      {/* Seção da equipe (nova) */}
+      <TeamGrid />
 
       {/* Convite */}
       <motion.div
