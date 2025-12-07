@@ -37,7 +37,8 @@ export default function Footer() {
               { name: "Home", href: "/" },
               { name: "Corridas", href: "/corridas" },
               { name: "Notícias", href: "/blog" },
-              { name: "Sobre nós", href: "/sobre-nos" },
+              { name: "Sobre nós", href: "/sobre" },
+              
             ].map((item) => (
               <li key={item.name}>
                 <Link
