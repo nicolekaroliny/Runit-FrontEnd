@@ -6,8 +6,10 @@ import { getAuthToken } from '@/lib/auth';
 import CategoryManagement from '@/app/components/CategoryManagement';
 import BlogManagement from '@/app/components/BlogManagement';
 import RaceManagement from '@/app/components/RaceManagement';
+import UserManagement from '@/app/components/UserManagement';
+import MembershipManagement from '@/app/components/MembershipManagement';
 
-type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'analytics' | 'settings';
+type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'memberships' | 'analytics' | 'settings';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -107,6 +109,17 @@ export default function AdminDashboard() {
               }`}
             >
               Usuários
+            </button>
+            
+            <button
+              onClick={() => setActiveSection('memberships')}
+              className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                activeSection === 'memberships'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              Memberships
             </button>
             
             <button
@@ -211,6 +224,16 @@ export default function AdminDashboard() {
                   </p>
                 </div>
 
+                <div
+                  onClick={() => setActiveSection('memberships')}
+                  className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <h2 className="text-2xl font-bold text-foreground mb-3">Gerenciar Memberships</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Crie, edite e delete tipos de membership
+                  </p>
+                </div>
+
                 <div className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-not-allowed opacity-50">
                   <h2 className="text-2xl font-bold text-foreground mb-3">Moderação de Conteúdo</h2>
                   <p className="text-muted-foreground mb-4">
@@ -247,21 +270,9 @@ export default function AdminDashboard() {
 
           {activeSection === 'races' && <RaceManagement />}
 
-          {activeSection === 'users' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-3xl font-bold text-foreground">Gerenciar Usuários</h2>
-                <p className="text-muted-foreground mt-1">
-                  Administre usuários e permissões da plataforma
-                </p>
-              </div>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-                <p className="text-yellow-800 text-lg">
-                  🚧 Esta funcionalidade está em desenvolvimento
-                </p>
-              </div>
-            </div>
-          )}
+          {activeSection === 'users' && <UserManagement />}
+
+          {activeSection === 'memberships' && <MembershipManagement />}
 
           {activeSection === 'analytics' && (
             <div className="space-y-6">
