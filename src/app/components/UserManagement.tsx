@@ -17,11 +17,17 @@ export default function UserManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     loadUsers();
     loadMembershipTypes();
-  }, []);
+  }, [isMounted]);
 
   const loadMembershipTypes = async () => {
     try {

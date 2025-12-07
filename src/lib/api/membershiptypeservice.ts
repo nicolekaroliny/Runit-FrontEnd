@@ -14,6 +14,18 @@ const getHeaders = () => {
   };
 };
 
+export interface MembershipTypeCreationRequest {
+  name: string;
+  monthlyPrice: number;
+  description?: string;
+}
+
+export interface MembershipTypeUpdateRequest {
+  name?: string;
+  monthlyPrice?: number;
+  description?: string;
+}
+
 export const MembershipTypeService = {
   // Get all membership types
   async getAllMembershipTypes(): Promise<MembershipType[]> {
@@ -52,6 +64,69 @@ export const MembershipTypeService = {
       return response.json();
     } catch (error: unknown) {
       console.error('Erro ao buscar tipo de membership:', error);
+      throw error;
+    }
+  },
+
+  // Create membership type
+  async createMembershipType(data: MembershipTypeCreationRequest): Promise<MembershipType> {
+    const API_BASE_URL = getApiBaseUrl();
+    try {
+      const response = await fetch(`${API_BASE_URL}/membership-types`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `Erro ao criar membership: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error: unknown) {
+      console.error('Erro ao criar membership:', error);
+      throw error;
+    }
+  },
+
+  // Update membership type
+  async updateMembershipType(id: number, data: MembershipTypeUpdateRequest): Promise<MembershipType> {
+    const API_BASE_URL = getApiBaseUrl();
+    try {
+      const response = await fetch(`${API_BASE_URL}/membership-types/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `Erro ao atualizar membership: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error: unknown) {
+      console.error('Erro ao atualizar membership:', error);
+      throw error;
+    }
+  },
+
+  // Delete membership type
+  async deleteMembershipType(id: number): Promise<void> {
+    const API_BASE_URL = getApiBaseUrl();
+    try {
+      const response = await fetch(`${API_BASE_URL}/membership-types/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `Erro ao deletar membership: ${response.status}`);
+      }
+    } catch (error: unknown) {
+      console.error('Erro ao deletar membership:', error);
       throw error;
     }
   },

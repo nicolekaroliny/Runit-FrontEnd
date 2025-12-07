@@ -23,10 +23,16 @@ export default function CategoryManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    loadCategories();
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    loadCategories();
+  }, [isMounted]);
 
   const loadCategories = async () => {
     try {

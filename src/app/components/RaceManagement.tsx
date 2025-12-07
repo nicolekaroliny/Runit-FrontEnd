@@ -15,10 +15,16 @@ export default function RaceManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    loadRaces();
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    loadRaces();
+  }, [isMounted]);
 
   const loadRaces = async () => {
     try {

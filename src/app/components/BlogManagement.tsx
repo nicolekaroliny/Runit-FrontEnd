@@ -24,10 +24,16 @@ export default function BlogManagement() {
     categoryIds: number[];
     status: 'DRAFT' | 'PUBLISHED';
   } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    loadData();
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    loadData();
+  }, [isMounted]);
 
   const loadData = async () => {
     try {
