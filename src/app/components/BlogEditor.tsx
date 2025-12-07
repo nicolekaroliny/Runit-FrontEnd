@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { BlogService } from '@/lib/api/blogservice';
 import { BlogPost, BlogPostCreationDto } from '@/types/blog.types';
+import { useAuth } from '@/context/authcontext';
 
 interface BlogEditorProps {
   onSuccess?: (post: BlogPost) => void;
@@ -14,6 +15,7 @@ interface BlogEditorProps {
 }
 
 export function BlogEditor({ onSuccess, initialPost, isEditing = false }: BlogEditorProps) {
+  const authContext = useAuth();
   const [title, setTitle] = useState(initialPost?.title || '');
   const [slug, setSlug] = useState(initialPost?.slug || '');
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt || '');
@@ -81,11 +83,17 @@ export function BlogEditor({ onSuccess, initialPost, isEditing = false }: BlogEd
   const handlePublish = async () => {
     if (!validate()) return;
 
+    if (!authContext?.user?.id) {
+      setErrors({
+        submit: 'Você precisa estar autenticado para criar um post',
+      });
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Aqui você pegaria o userId do contexto de auth real
-      const userId = 1; // TODO: buscar do auth context
+      const userId = parseInt(authContext.user.id, 10);
 
       const dto: BlogPostCreationDto = {
         title,
