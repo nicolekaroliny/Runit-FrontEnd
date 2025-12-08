@@ -8,6 +8,11 @@ export interface BlogPost {
   thumbnailUrl?: string;  // backend field name
   category?: string;
   categories?: any[];  // backend
+  author?: {
+    id: number;
+    name: string;
+    email?: string;
+  };
   createdAt: string;
   publicationDate?: string;  // backend field
   slug: string;

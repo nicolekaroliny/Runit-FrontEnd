@@ -74,7 +74,9 @@ const HeroPostCard = ({ post }: { post: BlogPost }) => (
             <User className="w-4 h-4 text-primary" />
           </div>
           <div className="flex flex-col text-xs">
-            <span className="font-semibold text-foreground">Runit</span>
+            <span className="font-semibold text-foreground">
+              {post.author?.name || 'Runit'}
+            </span>
             <span className="text-muted-foreground">
               {formatDate(post.publicationDate || post.createdAt)}
             </span>
@@ -216,8 +218,7 @@ export default function Home() {
 
   const heroPost = posts.length > 0 ? posts[0] : null;
   const featuredPosts = posts.length >= 3 ? posts.slice(1, 3) : posts.slice(1);
-  const recentPosts =
-    posts.length >= 3 ? posts.slice(3) : posts.length > 1 ? [posts[1]] : [];
+  const recentPosts = posts.length > 3 ? posts.slice(3) : [];
 
   // Extraindo categorias únicas dos posts
   const uniqueCategories = Array.from(
@@ -351,7 +352,7 @@ export default function Home() {
                 Receba dicas de treino direto no seu e-mail.
               </p>
               <Link
-                href="/signup"
+                href="/"
                 className="w-full inline-block bg-primary text-primary-foreground py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition"
               >
                 Inscrever-se
