@@ -22,7 +22,7 @@ export default function BlogManagement() {
     thumbnailUrl: string;
     content: string;
     categoryIds: number[];
-    status: 'DRAFT' | 'PUBLISHED';
+    status: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
   } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -39,10 +39,14 @@ export default function BlogManagement() {
     try {
       setLoading(true);
       const [postsData, categoriesData] = await Promise.all([
-        BlogService.getPublishedPosts(0, 100),
+        BlogService.getAllAdminPosts(),
         CategoryService.getAllCategories(),
       ]);
-      setPosts(postsData.content || []);
+      // ordena por criação desc para consistência
+      const ordered = (postsData || []).sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setPosts(ordered);
       setCategories(categoriesData);
       setError(null);
     } catch (err) {
@@ -62,7 +66,7 @@ export default function BlogManagement() {
       thumbnailUrl: post.imageUrl || post.thumbnailUrl || '',
       content: post.content,
       categoryIds: (post.categories || []).map((cat: BlogCategory) => cat.id),
-      status: post.status || 'PUBLISHED',
+      status: (post.status as any) || 'DRAFT',
     });
   };
 
@@ -197,10 +201,22 @@ export default function BlogManagement() {
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           post.status === 'PUBLISHED'
                             ? 'bg-green-100 text-green-800'
+                            : post.status === 'PENDING_REVIEW'
+                            ? 'bg-orange-100 text-orange-800'
+                            : post.status === 'ARCHIVED'
+                            ? 'bg-gray-200 text-gray-700'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
-                        {post.status === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}
+                        {
+                          post.status === 'PUBLISHED'
+                            ? 'Publicado'
+                            : post.status === 'PENDING_REVIEW'
+                            ? 'Revisão'
+                            : post.status === 'ARCHIVED'
+                            ? 'Arquivado'
+                            : 'Rascunho'
+                        }
                       </span>
                       {/* Data */}
                       <span className="text-xs text-muted-foreground">
@@ -366,7 +382,11 @@ export default function BlogManagement() {
                           prev
                             ? {
                                 ...prev,
-                                status: e.target.value as 'DRAFT' | 'PUBLISHED',
+                                status: e.target.value as
+                                  | 'DRAFT'
+                                  | 'PENDING_REVIEW'
+                                  | 'PUBLISHED'
+                                  | 'ARCHIVED',
                               }
                             : null
                         )
@@ -374,7 +394,9 @@ export default function BlogManagement() {
                       className="w-full px-3 py-2 border border-border rounded bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     >
                       <option value="DRAFT">Rascunho</option>
+                      <option value="PENDING_REVIEW">Em revisão</option>
                       <option value="PUBLISHED">Publicado</option>
+                      <option value="ARCHIVED">Arquivado</option>
                     </select>
                   </div>
 

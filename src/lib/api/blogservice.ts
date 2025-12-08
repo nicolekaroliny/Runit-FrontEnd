@@ -27,6 +27,28 @@ export class BlogService {
   }
 
   /**
+   * Busca todos os posts (admin), incluindo rascunhos e revisões
+   */
+  static async getAllAdminPosts(): Promise<BlogPost[]> {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+
+    const response = await fetch(ADMIN_BLOG_API, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Erro ao buscar posts (admin): ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
    * Busca um post específico pelo ID
    */
   static async getPostById(id: string | number): Promise<BlogPost> {
