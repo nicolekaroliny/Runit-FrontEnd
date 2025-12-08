@@ -8,6 +8,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { BlogService } from '@/lib/api/blogservice';
 import { CategoryService, BlogCategory } from '@/lib/api/categoryservice';
+import { useAuth } from '@/context/authcontext';
 
 interface BlogEditorFormData {
   title: string;
@@ -16,11 +17,12 @@ interface BlogEditorFormData {
   thumbnailUrl: string;
   content: string;
   categoryIds: number[];
-  status: 'DRAFT' | 'PUBLISHED';
+  status: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 }
 
 export default function NewBlogEditorPage() {
   const router = useRouter();
+  const authContext = useAuth();
 
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [formData, setFormData] = useState<BlogEditorFormData>({
@@ -91,8 +93,17 @@ export default function NewBlogEditorPage() {
     e.preventDefault();
     if (!validate()) return;
 
+    if (!authContext?.user?.id) {
+      setErrors({
+        general: 'Você precisa estar autenticado para criar um post',
+      });
+      return;
+    }
+
     try {
       setSubmitting(true);
+      const userId = parseInt(authContext.user.id, 10);
+
       const dto = {
         title: formData.title,
         slug: formData.slug,
@@ -100,6 +111,8 @@ export default function NewBlogEditorPage() {
         thumbnailUrl: formData.thumbnailUrl,
         content: formData.content,
         status: formData.status,
+        authorId: userId,
+        categoryIds: formData.categoryIds,
       };
 
       await BlogService.createPost(dto);
@@ -299,17 +312,27 @@ export default function NewBlogEditorPage() {
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
-                status: e.target.value as 'DRAFT' | 'PUBLISHED',
+                status: e.target.value as
+                  | 'DRAFT'
+                  | 'PENDING_REVIEW'
+                  | 'PUBLISHED'
+                  | 'ARCHIVED',
               }))
             }
             className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
           >
             <option value="DRAFT">📝 Rascunho - Não publicado</option>
+            <option value="PENDING_REVIEW">🕵️ Em revisão</option>
             <option value="PUBLISHED">🚀 Publicado - Visível para todos</option>
+            <option value="ARCHIVED">📦 Arquivado</option>
           </select>
           <p className="text-xs text-muted-foreground">
             {formData.status === 'DRAFT'
-              ? '💾 Este post será salvo como rascunho e não aparecerá no blog.'
+              ? '💾 Este post ficará como rascunho e não aparecerá publicamente.'
+              : formData.status === 'PENDING_REVIEW'
+              ? '🕵️ Este post ficará aguardando revisão e não aparecerá publicamente.'
+              : formData.status === 'ARCHIVED'
+              ? '📦 Este post ficará arquivado e indisponível publicamente.'
               : '🌍 Este post será publicado imediatamente no blog.'}
           </p>
         </div>

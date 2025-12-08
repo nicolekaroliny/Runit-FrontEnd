@@ -11,7 +11,7 @@ export interface BlogPost {
   createdAt: string;
   publicationDate?: string;  // backend field
   slug: string;
-  status?: string;
+  status?: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 }
 
 export interface BlogCategory {
@@ -50,4 +50,5 @@ export interface BlogPostUpdateDto {
   thumbnailUrl?: string;
   content?: string;
   categoryIds?: number[];
+  status?: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
 }

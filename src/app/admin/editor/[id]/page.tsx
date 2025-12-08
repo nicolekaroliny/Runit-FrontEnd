@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { use } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '@/context/authcontext';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { BlogService } from '@/lib/api/blogservice';
@@ -29,6 +30,7 @@ export default function BlogEditorPage({
 }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const authContext = useAuth();
   const postId = resolvedParams?.id;
   const isEditing = !!postId;
 
@@ -124,21 +126,38 @@ export default function BlogEditorPage({
     e.preventDefault();
     if (!validate()) return;
 
+    if (!authContext?.user?.id) {
+      setErrors({ general: 'Usuário não autenticado' });
+      return;
+    }
+
     try {
       setSubmitting(true);
-      const dto = {
-        title: formData.title,
-        slug: formData.slug,
-        excerpt: formData.excerpt,
-        thumbnailUrl: formData.thumbnailUrl,
-        content: formData.content,
-        status: formData.status,
-      };
+      const userId = parseInt(authContext.user.id, 10);
 
       if (isEditing) {
-        await BlogService.updatePost(parseInt(postId!), dto);
+        const updateDto = {
+          title: formData.title,
+          slug: formData.slug,
+          excerpt: formData.excerpt,
+          thumbnailUrl: formData.thumbnailUrl,
+          content: formData.content,
+          status: formData.status,
+          categoryIds: formData.categoryIds,
+        };
+        await BlogService.updatePost(parseInt(postId!), updateDto);
       } else {
-        await BlogService.createPost(dto);
+        const createDto = {
+          title: formData.title,
+          slug: formData.slug,
+          excerpt: formData.excerpt,
+          thumbnailUrl: formData.thumbnailUrl,
+          content: formData.content,
+          status: formData.status,
+          authorId: userId,
+          categoryIds: formData.categoryIds,
+        };
+        await BlogService.createPost(createDto);
       }
 
       router.push('/admin/blog');
