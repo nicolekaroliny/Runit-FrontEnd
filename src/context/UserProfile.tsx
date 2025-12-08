@@ -50,18 +50,44 @@ export default function UserProfile() {
 
         {/* Dropdown Menu */}
         {dropdownOpen && (
-          <div className="absolute right-0 top-full mt-3 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 animate-fadeIn">
-            <div className="px-4 py-3 border-b border-gray-200">
-              <p className="text-sm font-bold text-gray-800">{user.name}</p>
-              <p className="text-xs text-gray-500 truncate">{user.email}</p>
-              <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">
-                {user.user_type === 'admin' ? 'Administrador' : 'Usuário'}
+          <div className="absolute right-0 top-full mt-3 w-56 bg-card rounded-xl shadow-2xl border border-foreground py-2 z-50 animate-fadeIn">
+            <div className="px-4 py-3 border-b border-foreground">
+              <p className="text-sm font-bold text-foreground">{user.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              <span className="inline-block mt-1 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full font-semibold">
+                {user.user_type === 'admin' ? 'Administrador' : user.user_type === 'editor' ? 'Editor' : 'Usuário'}
               </span>
             </div>
 
+            {user.user_type === 'admin' && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-3 px-4 py-2.5 hover:bg-primary/10 transition-colors text-primary text-sm font-semibold border-b border-border"
+                onClick={() => setDropdownOpen(false)}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Painel Admin
+              </Link>
+            )}
+
+            {user.user_type === 'editor' && (
+              <Link
+                href="/painel-editor"
+                className="flex items-center gap-3 px-4 py-2.5 hover:bg-primary/10 transition-colors text-primary text-sm font-semibold border-b border-border"
+                onClick={() => setDropdownOpen(false)}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Painel do Editor
+              </Link>
+            )}
+
             <Link
               href="/perfil"
-              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700 text-sm"
+              className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary/90 transition-colors text-foreground text-sm"
               onClick={() => setDropdownOpen(false)}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,9 +96,9 @@ export default function UserProfile() {
               Meu Perfil
             </Link>
 
-            <Link
+            {/* <Link
               href="/configuracoes"
-              className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700 text-sm"
+              className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary/90 transition-colors text-foreground text-sm"
               onClick={() => setDropdownOpen(false)}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,13 +106,13 @@ export default function UserProfile() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Configurações
-            </Link>
+            </Link> */}
 
-            <div className="border-t border-gray-200 mt-2"></div>
+            <div className="border-t border-foreground mt-2"></div>
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-red-600 text-sm w-full"
+              className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-destructive text-sm w-full"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

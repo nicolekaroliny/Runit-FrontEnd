@@ -8,14 +8,33 @@ import BlogManagement from '@/app/components/BlogManagement';
 import RaceManagement from '@/app/components/RaceManagement';
 import UserManagement from '@/app/components/UserManagement';
 import MembershipManagement from '@/app/components/MembershipManagement';
+import { BlogService } from '@/lib/api/blogservice';
+import { CategoryService } from '@/lib/api/categoryservice';
+import { UserService } from '@/lib/api/userservice';
 
 type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'memberships' | 'analytics' | 'settings';
+
+interface DashboardStats {
+  totalPosts: number;
+  totalUsers: number;
+  totalCategories: number;
+  draftPosts: number;
+  publishedPosts: number;
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
+  const [stats, setStats] = useState<DashboardStats>({
+    totalPosts: 0,
+    totalUsers: 0,
+    totalCategories: 0,
+    draftPosts: 0,
+    publishedPosts: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -26,6 +45,39 @@ export default function AdminDashboard() {
     setIsAuthorized(true);
     setLoading(false);
   }, [router]);
+
+  const loadDashboardStats = async () => {
+    setLoadingStats(true);
+    try {
+      const [allPosts, categories, users] = await Promise.all([
+        BlogService.getAllAdminPosts(),
+        CategoryService.getAllCategories(),
+        UserService.getAllUsers(),
+      ]);
+
+      const draftCount = allPosts.filter(post => post.status === 'DRAFT').length;
+      const publishedCount = allPosts.filter(post => post.status === 'PUBLISHED').length;
+
+      setStats({
+        totalPosts: allPosts.length,
+        totalUsers: users.length,
+        totalCategories: categories.length,
+        draftPosts: draftCount,
+        publishedPosts: publishedCount,
+      });
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthorized && activeSection === 'dashboard') {
+      loadDashboardStats();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthorized, activeSection]);
 
   if (loading) {
     return (
@@ -163,22 +215,43 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
                 <div className="bg-card rounded-lg shadow-md border border-border p-6">
                   <h3 className="text-muted-foreground text-sm font-medium mb-2">Total de Posts</h3>
-                  <p className="text-3xl font-bold text-foreground">-</p>
+                  {loadingStats ? (
+                    <div className="animate-pulse h-9 bg-muted rounded w-16"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground">{stats.totalPosts}</p>
+                  )}
                 </div>
 
                 <div className="bg-card rounded-lg shadow-md border border-border p-6">
                   <h3 className="text-muted-foreground text-sm font-medium mb-2">Total de Usuários</h3>
-                  <p className="text-3xl font-bold text-foreground">-</p>
+                  {loadingStats ? (
+                    <div className="animate-pulse h-9 bg-muted rounded w-16"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground">{stats.totalUsers}</p>
+                  )}
                 </div>
 
                 <div className="bg-card rounded-lg shadow-md border border-border p-6">
                   <h3 className="text-muted-foreground text-sm font-medium mb-2">Categorias</h3>
-                  <p className="text-3xl font-bold text-foreground">-</p>
+                  {loadingStats ? (
+                    <div className="animate-pulse h-9 bg-muted rounded w-16"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground">{stats.totalCategories}</p>
+                  )}
                 </div>
 
                 <div className="bg-card rounded-lg shadow-md border border-border p-6">
                   <h3 className="text-muted-foreground text-sm font-medium mb-2">Posts em Rascunho</h3>
-                  <p className="text-3xl font-bold text-foreground">-</p>
+                  {loadingStats ? (
+                    <div className="animate-pulse h-9 bg-muted rounded w-16"></div>
+                  ) : (
+                    <p className="text-3xl font-bold text-foreground">{stats.draftPosts}</p>
+                  )}
+                  {!loadingStats && stats.publishedPosts > 0 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {stats.publishedPosts} publicados
+                    </p>
+                  )}
                 </div>
               </div>
 

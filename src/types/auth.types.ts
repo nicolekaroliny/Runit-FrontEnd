@@ -9,7 +9,7 @@
 // TIPOS DO SERVIÇO DE AUTENTICAÇÃO
 // ============================================
 
-export type UserType = "user" | "admin";
+export type UserType = "user" | "admin" | "editor";
 
 export interface SignUpData {
   name: string;                      // Min 1, Max 100
