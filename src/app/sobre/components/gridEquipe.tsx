@@ -25,7 +25,7 @@ const team = [
   { 
     file: "/images/equipe/francisco.png",
     name: "Francisco de Assis",
-    role: "Desenvolvedor Full-stack",
+    role: "Cybersecurity Analyst Desenvolvedor Full-stack",
     linkedin: "https://www.linkedin.com/in/franciscoprimo/"
   },
   { 
