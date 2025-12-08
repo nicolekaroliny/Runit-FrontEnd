@@ -1,4 +1,4 @@
-export type UserType = "user" | "admin";
+export type UserType = "user" | "admin" | "editor";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api`; 
 
@@ -129,6 +129,36 @@ export const authService = {
         console.error("❌ Erro de rede - Backend não está acessível");
         throw new Error("Não foi possível conectar ao servidor. Verifique se o backend está rodando em http://localhost:8080");
       }
+      throw error;
+    }
+  },
+
+  /**
+   * Obtém a URL para redirecionar o usuário para o Google OAuth
+   */
+  async getGoogleAuthUrl(): Promise<string> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/google`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao obter URL do Google: ${response.status}`);
+      }
+
+      const data = await response.text();
+      // Backend retorna a URL no format: "Acesse o link para login com Google: <URL>"
+      // Precisamos extrair a URL
+      const match = data.match(/https:\/\/[^\s"]+/);
+      if (!match) {
+        throw new Error("URL do Google não encontrada na resposta");
+      }
+      return match[0];
+    } catch (error) {
+      console.error("❌ Erro ao obter URL do Google:", error);
       throw error;
     }
   },
