@@ -53,7 +53,8 @@ const team = [
   { 
     file: "/images/equipe/rodrigo.png",
     name: "Rodrigo Borges",
-    role: "Desenvolvedor Front-end"
+    role: "Desenvolvedor Front-end",
+    linkedin: "https://www.linkedin.com/in/rodrigoborgesfreitas/"
   },
 ];
 
