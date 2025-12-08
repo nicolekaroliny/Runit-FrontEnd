@@ -94,12 +94,8 @@ export class BlogService {
   /**
    * Busca posts por termo de busca
    */
-  static async searchPosts(
-    query: string,
-    page: number = 0,
-    size: number = 12
-  ): Promise<PaginatedResponse<BlogPost>> {
-    const response = await fetch(`${BLOG_API}/posts/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`, {
+  static async searchPosts(query: string): Promise<BlogPost[]> {
+    const response = await fetch(`${BLOG_API}/posts/search?q=${encodeURIComponent(query)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
