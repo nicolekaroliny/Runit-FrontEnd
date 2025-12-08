@@ -117,5 +117,37 @@ export async function performRegister(data: AuthServiceSignUpData): Promise<{ su
   }
 }
 
+export interface GoogleLoginData {
+  token: string;
+  id: number;
+  name: string;
+  lastName: string;
+  email: string;
+  user_type: AuthServiceUserType;
+}
+
+export async function performGoogleLogin(googleData: GoogleLoginData): Promise<{ success: boolean; user?: User; message?: string }> {
+  try {
+    console.log("🔐 performGoogleLogin: Processando autenticação do Google");
+    
+    const userToStore: User = {
+      id: googleData.id.toString(),
+      name: googleData.name,
+      email: googleData.email,
+      user_type: googleData.user_type,
+    };
+    
+    console.log("🔐 performGoogleLogin: User object criado:", userToStore);
+    storeSession(googleData.token, userToStore);
+    console.log("🔐 performGoogleLogin: Session armazenada com sucesso");
+    return { success: true, user: userToStore };
+  } catch (error: unknown) { 
+    const message = error instanceof Error ? error.message : 'Erro ao processar login do Google.';
+    console.error("❌ performGoogleLogin: Erro capturado:", message);
+    logoutUser();
+    return { success: false, message };
+  }
+}
+
 
 export type { AuthServiceUserType as UserType };

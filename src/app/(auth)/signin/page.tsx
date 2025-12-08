@@ -5,18 +5,25 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import LogoNav from '@/app/components/navBar/LogoNav';
+import { authService } from '@/lib/api/authservice';
 
 export default function SignIn() {
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingBiometric, setIsLoadingBiometric] = useState(false);
+  const [errorGoogle, setErrorGoogle] = useState<string | null>(null);
 
   const handleGoogleLogin = async () => {
     setIsLoadingGoogle(true);
+    setErrorGoogle(null);
     try {
-      // TODO: Implementar Google OAuth
-      console.log('Google login initiated');
+      console.log('🔄 Iniciando login com Google...');
+      const googleAuthUrl = await authService.getGoogleAuthUrl();
+      console.log('✅ URL do Google obtida, redirecionando...');
+      // Redireciona para o Google OAuth
+      window.location.href = googleAuthUrl;
     } catch (error) {
-      console.error('Google login failed:', error);
+      console.error('❌ Erro no login com Google:', error);
+      setErrorGoogle(error instanceof Error ? error.message : 'Erro ao iniciar login com Google');
     } finally {
       setIsLoadingGoogle(false);
     }
@@ -93,6 +100,13 @@ export default function SignIn() {
 
             {/* Login Form */}
             <LoginForm />
+
+            {/* Erro do Google */}
+            {errorGoogle && (
+              <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">
+                {errorGoogle}
+              </div>
+            )}
 
             {/* Divisor */}
             <div className="relative">
