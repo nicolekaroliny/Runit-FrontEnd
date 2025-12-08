@@ -36,6 +36,7 @@ const team = [
     file: "/images/equipe/italo.png",
     name: "Italo Maciel",
     role: "Responsável pela documentação",
+    linkedin: "https://www.linkedin.com/in/153017232024im/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
     github: "https://github.com/Gof3x"
   },
   { 
