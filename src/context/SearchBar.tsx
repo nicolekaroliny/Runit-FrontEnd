@@ -8,7 +8,11 @@ import { Race } from '@/types/race.types';
 import { BlogPost } from '@/types/blog.types';
 import { Search, X, MapPin, Calendar, FileText } from 'lucide-react';
 
-export default function SearchBar() {
+type SearchBarProps = {
+  className?: string;
+};
+
+export default function SearchBar({ className = '' }: SearchBarProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -102,7 +106,7 @@ export default function SearchBar() {
   const totalResults = races.length + posts.length;
 
   return (
-    <div className="hidden lg:block relative w-96 z-[2100]" ref={searchRef}>
+    <div className={`relative w-96 z-[2300] ${className}`} ref={searchRef}>
       <div className="flex items-center bg-card rounded-full shadow-md px-4 py-2.5 gap-3 border border-border cursor-text">
         <Search className="w-5 h-5 text-primary flex-shrink-0 pointer-events-none" />
         <input
@@ -131,7 +135,7 @@ export default function SearchBar() {
 
       {/* Results Dropdown */}
       {isOpen && (searchQuery.trim().length >= 2) && (
-        <div className="absolute top-full mt-2 w-full bg-card rounded-lg shadow-xl border border-border max-h-[500px] overflow-y-auto z-[2150]">
+        <div className="absolute top-full mt-2 w-full bg-card rounded-lg shadow-xl border border-border max-h-[500px] overflow-y-auto z-[2350]">
           {totalResults === 0 && !isSearching && (
             <div className="p-6 text-center text-muted-foreground">
               <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
