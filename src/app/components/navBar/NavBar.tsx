@@ -30,7 +30,7 @@ const NavBar = () => {
             <div className="max-w-8xl mx-auto px-6 sm:px-8 lg:px-12">
                 <div className="flex items-center justify-between h-24">
                     <LogoNav/>
-                    <SearchBar/>
+                    <SearchBar className="hidden lg:block" />
 
                     <div className="hidden md:flex items-center gap-3">
                         {navLinks.map((link) => (
@@ -55,7 +55,7 @@ const NavBar = () => {
                         ))}
                     </div>
 
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         {isAuthenticated ? (
                             <UserProfile />
                         ) : (
@@ -63,15 +63,14 @@ const NavBar = () => {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-6 md:hidden">
-                        {!isAuthenticated && <LoginButton />}
+                    <div className="md:hidden flex items-center gap-2">
                         <HamburgerButton isOpen={isMobileMenuOpen} toggleMenu={toggleMobileMenu} />
                     </div>
                 </div>
             </div>
 
             <div
-                className={`md:hidden border-t border-navbar-primary/20 bg-navbar-primary/98 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out ${
+                className={`md:hidden border-t border-navbar-primary/20 bg-navbar-primary/98 backdrop-blur-xl overflow-visible transition-all duration-300 ease-in-out ${
                     isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
                 }`}
             >
@@ -90,6 +89,9 @@ const NavBar = () => {
                             {link.name}
                         </Link>
                     ))}
+                    <div className="mt-6">
+                        <SearchBar className="w-full" />
+                    </div>
                 </div>
             </div>
         </nav>
