@@ -9,7 +9,6 @@ export default function FooterWrapper() {
   const hiddenExact = [
     "/signup",
     "/signin",
-    "/corridas",
     "/dashboard",
     "/dashboard/profile",
     "/dashboard/settings",
