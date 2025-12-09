@@ -8,11 +8,13 @@ import BlogManagement from '@/app/components/BlogManagement';
 import RaceManagement from '@/app/components/RaceManagement';
 import UserManagement from '@/app/components/UserManagement';
 import MembershipManagement from '@/app/components/MembershipManagement';
+import AnalyticsPanel from '@/app/components/AnalyticsPanel';
+import ChurnLtvAnalytics from '@/app/components/ChurnLtvAnalytics';
 import { BlogService } from '@/lib/api/blogservice';
 import { CategoryService } from '@/lib/api/categoryservice';
 import { UserService } from '@/lib/api/userservice';
 
-type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'memberships' | 'analytics' | 'settings';
+type AdminSection = 'dashboard' | 'categories' | 'blog' | 'races' | 'users' | 'memberships' | 'analytics' | 'churn-ltv' | 'settings';
 
 interface DashboardStats {
   totalPosts: number;
@@ -186,6 +188,17 @@ export default function AdminDashboard() {
             </button>
             
             <button
+              onClick={() => setActiveSection('churn-ltv')}
+              className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                activeSection === 'churn-ltv'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-muted'
+              }`}
+            >
+              Churn & LTV
+            </button>
+            
+            <button
               onClick={() => setActiveSection('settings')}
               className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                 activeSection === 'settings'
@@ -325,6 +338,16 @@ export default function AdminDashboard() {
                 </div>
 
                 <div
+                  onClick={() => setActiveSection('churn-ltv')}
+                  className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <h2 className="text-2xl font-bold text-foreground mb-3">Churn & LTV</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Análise de predição de churn e lifetime value
+                  </p>
+                </div>
+
+                <div
                   onClick={() => setActiveSection('settings')}
                   className="bg-card rounded-lg shadow-md border border-border p-6 hover:shadow-lg transition-shadow cursor-pointer"
                 >
@@ -347,21 +370,9 @@ export default function AdminDashboard() {
 
           {activeSection === 'memberships' && <MembershipManagement />}
 
-          {activeSection === 'analytics' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-3xl font-bold text-foreground">Analíticas</h2>
-                <p className="text-muted-foreground mt-1">
-                  Visualize estatísticas e relatórios de desempenho
-                </p>
-              </div>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-                <p className="text-yellow-800 text-lg">
-                  🚧 Esta funcionalidade está em desenvolvimento
-                </p>
-              </div>
-            </div>
-          )}
+          {activeSection === 'analytics' && <AnalyticsPanel />}
+
+          {activeSection === 'churn-ltv' && <ChurnLtvAnalytics />}
 
           {activeSection === 'settings' && (
             <div className="space-y-6">
