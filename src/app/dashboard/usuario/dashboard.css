@@ -1,0 +1,66 @@
+/* Scroll suave apenas dentro de tabelas */
+.dashboard-table-wrapper {
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+/* Barra de scroll customizada */
+.dashboard-table-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.dashboard-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 999px;
+}
+.dashboard-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
+
+/* Modal backdrop */
+.dashboard-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal container */
+.dashboard-modal {
+  width: 100%;
+  max-width: 640px;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Gráfico – barras */
+.dashboard-chart-bar {
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, var(--primary), #1e40af);
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.dashboard-chart-bar:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* Achievement progress bar */
+.dashboard-achievement-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dashboard-achievement-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1d4ed8, #22c55e);
+  transition: width 0.3s ease;
+  border-radius: 999px;
+}
