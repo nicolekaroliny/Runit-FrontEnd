@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import ConquistasSection from "./ConquistasSection";
 import "./dashboard.css";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useFavorites } from "@/context/FavoritesContext";
 
-/* Tipos reduzidos (compatíveis com os que você usou) */
+/* Registro */
 type Registro = {
   id: string;
   titulo: string;
@@ -49,7 +50,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadingFavs, setLoadingFavs] = useState(true);
 
-  // Registros e favoritos mockados
+  const { favorites: favsContext, removeFavorite: removeFavContext } = useFavorites();
+
+  // Registros mockados
   useEffect(() => {
     const registrosMock: Registro[] = [
       {
@@ -70,23 +73,15 @@ export default function DashboardPage() {
       },
     ];
 
-    const favoritesMock: Fav[] = [
-      {
-        corridaId: "oab",
-        titulo: "Corrida da OAB",
-        data: "2025-11-09",
-        hora: "06:00",
-        local: "Recife",
-        distancias: "5k,10k",
-        link: "",
-      },
-    ];
-
     setRegistros(registrosMock);
-    setFavorites(favoritesMock);
     setLoading(false);
-    setLoadingFavs(false);
   }, []);
+
+  // Sincroniza favoritos
+  useEffect(() => {
+    setFavorites(favsContext);
+    setLoadingFavs(false);
+  }, [favsContext]);
 
   /* --- Métricas derivadas --- */
   const metrics = useMemo(() => {
@@ -137,8 +132,10 @@ export default function DashboardPage() {
   /* --- actions placeholders --- */
   const handleSelectRegistro = (id: string) => console.log("select", id);
   const handleDeleteRegistro = (id: string) => setRegistros((p) => p.filter((r) => r.id !== id));
-  const removeFavorite = (corridaId: string) =>
-    setFavorites((p) => p.filter((f) => f.corridaId !== corridaId));
+  function removeFavorite(corridaId: string): void {
+    return setFavorites((p) => p.filter((f) => f.corridaId !== corridaId));
+  }
+
 
   /* ---------------- JSX ---------------- */
   return (
@@ -175,7 +172,6 @@ export default function DashboardPage() {
                       <th className="py-2">Título</th>
                       <th className="py-2">Distância</th>
                       <th className="py-2">Tempo</th>
-                      <th className="py-2">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -208,9 +204,9 @@ export default function DashboardPage() {
               <div style={{ width: "100%", height: 200 }}>
                 <ResponsiveContainer>
                   <BarChart data={metrics.chartDays}>
-                     <XAxis dataKey="label" />
-                     <YAxis />
-                     <Tooltip formatter={(value: number) => `${value.toFixed(1)} km`} />
+                    <XAxis dataKey="label" />
+                    <YAxis />
+                    <Tooltip formatter={(value: number) => `${value.toFixed(1)} km`} />
                     <Bar dataKey="value" fill="#4f46e5" radius={[4,4,0,0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -246,7 +242,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         {f.link ? <a href={f.link} target="_blank" rel="noreferrer" className="text-sm text-primary">Inscrição</a> : <span className="text-xs text-muted-foreground">Sem link</span>}
-                        <button onClick={() => removeFavorite(f.corridaId)} className="text-xs text-destructive">Remover</button>
+                        <button onClick={() => removeFavContext(f.corridaId)} className="text-xs text-destructive">Remover</button>
                       </div>
                     </article>
                   ))}

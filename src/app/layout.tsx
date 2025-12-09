@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/authcontext";
 import ConditionalNavBar from "@/app/components/ConditionalNavBar";
 import FooterWrapper from "@/app/components/FooterWrapper";
 import { AuthDebug } from "@/components/AuthDebug";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 
 export const metadata: Metadata = {
   title: "Runit",
@@ -24,16 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={poppins.className} suppressHydrationWarning>
       <body>
         <AuthProvider>
-          <ConditionalNavBar />
+          <FavoritesProvider>
+            <ConditionalNavBar />
 
-          {/* pt-24 para deixar espaço da NavBar fixa */}
-          <div className="w-full min-h-screen bg-background dark:bg-black pt-24">
-            {children}
-          </div>
+            {/* pt-24 para deixar espaço da NavBar fixa */}
+            <div className="w-full min-h-screen bg-background dark:bg-black pt-24">
+              {children}
+            </div>
 
-          <AuthDebug />
-
-          <FooterWrapper />
+            <AuthDebug />
+            <FooterWrapper />
+          </FavoritesProvider>
         </AuthProvider>
       </body>
     </html>

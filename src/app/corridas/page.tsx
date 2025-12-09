@@ -7,22 +7,13 @@ import { RaceService } from "@/lib/api/raceservice";
 import { corridas as staticCorridas } from "./data";
 import type { Corrida } from "./data";
 import type { RacePoint } from "../components/MapView";
+import { useFavorites, Fav } from "@/context/FavoritesContext";
 
 const MapView = dynamic(() => import("../components/MapView"), { ssr: false });
 
 const monthAbbr = [
-  "JAN",
-  "FEV",
-  "MAR",
-  "ABR",
-  "MAI",
-  "JUN",
-  "JUL",
-  "AGO",
-  "SET",
-  "OUT",
-  "NOV",
-  "DEZ",
+  "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
+  "JUL", "AGO", "SET", "OUT", "NOV", "DEZ",
 ];
 
 function getDateParts(dateValue?: string) {
@@ -30,10 +21,7 @@ function getDateParts(dateValue?: string) {
 
   const isoCandidate = new Date(dateValue);
   if (!Number.isNaN(isoCandidate.getTime())) {
-    return {
-      day: isoCandidate.getDate().toString().padStart(2, "0"),
-      mon: monthAbbr[isoCandidate.getMonth()] || "--",
-    };
+    return { day: isoCandidate.getDate().toString().padStart(2, "0"), mon: monthAbbr[isoCandidate.getMonth()] || "--" };
   }
 
   const match = dateValue.match(/(\d{2})\/(\d{2})\/(\d{4})/);
@@ -50,11 +38,7 @@ function formatDateLabel(dateValue?: string) {
 
   const parsed = new Date(dateValue);
   if (!Number.isNaN(parsed.getTime())) {
-    return parsed.toLocaleDateString("pt-BR", {
-      year: "numeric",
-      month: "long",
-      day: "2-digit",
-    });
+    return parsed.toLocaleDateString("pt-BR", { year: "numeric", month: "long", day: "2-digit" });
   }
 
   const match = dateValue.match(/(\d{2})\/(\d{2})\/(\d{4})/);
@@ -98,6 +82,8 @@ export default function CorridasPage() {
   const [error, setError] = useState<string | null>(null);
   const [usingFallback, setUsingFallback] = useState(false);
 
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
+
   const hydrateFromStatic = useCallback(() => {
     const fallback = staticCorridas.map(mapStaticToPoint);
     setPoints(fallback);
@@ -139,6 +125,17 @@ export default function CorridasPage() {
 
   const selected = useMemo(() => points.find((race) => race.id === selectedId), [points, selectedId]);
 
+  // --- funções para salvar e identificar corridas ---
+  const isFavorited = (id: string) => favorites.some((f) => f.corridaId === id);
+  const isNear = (dateLabel?: string) => {
+    if (!dateLabel) return false;
+    const d = new Date(dateLabel).getTime();
+    if (Number.isNaN(d)) return false;
+    const now = Date.now();
+    const diffDays = (d - now) / (1000 * 60 * 60 * 24);
+    return diffDays >= 0 && diffDays <= 3;
+  };
+
   return (
     <div className="bg-background min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 py-10">
@@ -162,7 +159,7 @@ export default function CorridasPage() {
                 Modo offline (dados locais)
               </span>
             )}
-
+            
             {error && (
               <span className="text-xs font-medium px-3 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/30">
                 {error}
@@ -198,60 +195,75 @@ export default function CorridasPage() {
                       key={race.id}
                       onClick={() => setSelectedId(race.id)}
                       className={[
-                        "group w-full rounded-xl border transition",
+                        "group w-full rounded-xl border transition flex items-center gap-3",
                         active
                           ? "bg-primary text-primary-foreground border-primary shadow-md"
                           : "bg-muted text-foreground border-border hover:border-primary/60 hover:shadow-sm",
                       ].join(" ")}
                     >
-                      <div className="flex items-center gap-3 px-3 py-3">
-                        <div
+                      <div
+                        className={[
+                          "w-14 h-14 rounded-lg flex flex-col items-center justify-center leading-none font-extrabold",
+                          active
+                            ? "bg-primary-foreground/20 text-primary-foreground"
+                            : "bg-background text-foreground border border-border",
+                        ].join(" ")}
+                      >
+                        <span className="text-xl">{day}</span>
+                        <span className="text-[11px] tracking-wide">{mon}</span>
+                      </div>
+
+                      <div className="flex-1 text-left">
+                        <div className="font-semibold text-base leading-tight line-clamp-2">
+                          {race.title}
+                        </div>
+                        <div className={active ? "text-primary-foreground/80 text-sm" : "text-muted-foreground text-sm"}>
+                          {race.locationLabel || "Local a definir"}
+                        </div>
+                        <div className={active ? "text-primary-foreground/75 text-xs mt-1" : "text-muted-foreground text-xs mt-1"}>
+                          {race.distanceLabel || "Distância a definir"}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 ml-auto">
+                        {isNear(race.dateLabel) && <span title="Corrida próxima" className="text-yellow-500 text-xl">🔔</span>}
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isFavorited(race.id)) {
+                              addFavorite({
+                                corridaId: race.id,
+                                titulo: race.title,
+                                data: race.dateLabel,
+                                local: race.locationLabel,
+                                distancias: race.distanceLabel,
+                                link: race.link,
+                              } as Fav);
+                            } else {
+                              removeFavorite(race.id);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded text-xs font-semibold ${
+                            isFavorited(race.id) ? "bg-green-500 text-white" : "bg-blue-500 text-white"
+                          }`}
+                        >
+                          {isFavorited(race.id) ? "Salvo" : "Salvar"}
+                        </button>
+                      </div>
+
+                      {race.status && (
+                        <span
                           className={[
-                            "w-14 h-14 rounded-lg flex flex-col items-center justify-center leading-none font-extrabold",
+                            "text-[11px] px-2 py-1 rounded-full font-semibold ml-2",
                             active
                               ? "bg-primary-foreground/20 text-primary-foreground"
-                              : "bg-background text-foreground border border-border",
+                              : "bg-background text-primary border border-primary/30",
                           ].join(" ")}
                         >
-                          <span className="text-xl">{day}</span>
-                          <span className="text-[11px] tracking-wide">{mon}</span>
-                        </div>
-
-                        <div className="flex-1 text-left">
-                          <div className="font-semibold text-base leading-tight line-clamp-2">
-                            {race.title}
-                          </div>
-                          <div
-                            className={[
-                              "text-sm leading-tight",
-                              active ? "text-primary-foreground/80" : "text-muted-foreground",
-                            ].join(" ")}
-                          >
-                            {race.locationLabel || "Local a definir"}
-                          </div>
-                          <div
-                            className={[
-                              "text-xs mt-1",
-                              active ? "text-primary-foreground/75" : "text-muted-foreground",
-                            ].join(" ")}
-                          >
-                            {race.distanceLabel || "Distância a definir"}
-                          </div>
-                        </div>
-
-                        {race.status && (
-                          <span
-                            className={[
-                              "text-[11px] px-2 py-1 rounded-full font-semibold",
-                              active
-                                ? "bg-primary-foreground/20 text-primary-foreground"
-                                : "bg-background text-primary border border-primary/30",
-                            ].join(" ")}
-                          >
-                            {race.status}
-                          </span>
-                        )}
-                      </div>
+                          {race.status}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -292,23 +304,17 @@ export default function CorridasPage() {
                       <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-lg border border-border bg-muted/50 p-3">
                           <p className="text-xs text-muted-foreground">Data</p>
-                          <p className="text-sm font-semibold text-foreground">
-                            {selected.dateLabel || "A definir"}
-                          </p>
+                          <p className="text-sm font-semibold text-foreground">{selected.dateLabel || "A definir"}</p>
                         </div>
                         <div className="rounded-lg border border-border bg-muted/50 p-3">
                           <p className="text-xs text-muted-foreground">Local</p>
-                          <p className="text-sm font-semibold text-foreground">
-                            {selected.locationLabel || "A definir"}
-                          </p>
+                          <p className="text-sm font-semibold text-foreground">{selected.locationLabel || "A definir"}</p>
                         </div>
                       </div>
 
                       <div className="rounded-lg border border-border bg-muted/30 p-3">
                         <p className="text-xs text-muted-foreground">Distâncias</p>
-                        <p className="text-sm font-semibold text-foreground">
-                          {selected.distanceLabel || "Consultar organização"}
-                        </p>
+                        <p className="text-sm font-semibold text-foreground">{selected.distanceLabel || "Consultar organização"}</p>
                       </div>
 
                       {selected.link ? (
