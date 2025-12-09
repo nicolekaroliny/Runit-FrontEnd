@@ -170,9 +170,9 @@ export default function Home() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Buscar posts
+        // Buscar posts (aumentado para 20 para ter posts suficientes)
         const postsData: PaginatedResponse<BlogPost> =
-          await BlogService.getPublishedPosts(0, 10);
+          await BlogService.getPublishedPosts(0, 20);
         const allPosts = postsData.content || [];
 
         // Filtrar apenas posts com categoria "Destaques" para hero
@@ -218,7 +218,10 @@ export default function Home() {
 
   const heroPost = posts.length > 0 ? posts[0] : null;
   const featuredPosts = posts.length >= 3 ? posts.slice(1, 3) : posts.slice(1);
-  const recentPosts = posts.length > 3 ? posts.slice(3) : [];
+  // Grid: pega posts 1-4 (após o hero)
+  const gridPosts = posts.length > 1 ? posts.slice(1, Math.min(5, posts.length)) : [];
+  // Recentes: pega do índice 5 em diante
+  const recentPosts = posts.length > 5 ? posts.slice(5) : [];
 
   // Extraindo categorias únicas dos posts
   const uniqueCategories = Array.from(
@@ -272,25 +275,50 @@ export default function Home() {
               </section>
             )}
 
-            {/* 2. Grid de Artigos */}
-            {recentPosts.length > 0 && (
-              <section className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+            {/* 2. Grid de Artigos em Destaque */}
+            {gridPosts.length > 0 && (
+              <section className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
                     <span className="w-1 h-6 bg-primary rounded-full"></span>
-                    Últimos Artigos
+                    Artigos em Destaque
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {recentPosts.map((post) => (
+                  {gridPosts.map((post) => (
                     <StandardPostCard key={post.id} post={post} />
                   ))}
-                  {/* Fallback para preencher a grid se tiver poucos posts recentes */}
-                  {recentPosts.length < 2 &&
+                  {/* Fallback para preencher a grid se tiver poucos posts */}
+                  {gridPosts.length < 2 &&
                     featuredPosts.map((post) => (
                       <StandardPostCard key={post.id} post={post} />
                     ))}
+                </div>
+              </section>
+            )}
+
+            {/* 3. Artigos Mais Recentes */}
+            {recentPosts.length > 0 && (
+              <section className="animate-in fade-in slide-in-from-bottom-12 duration-700 delay-150">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <span className="w-1 h-6 bg-primary rounded-full"></span>
+                    Artigos Mais Recentes
+                  </h2>
+                  <Link 
+                    href="/blog" 
+                    className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
+                  >
+                    Ver todos
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {recentPosts.slice(0, 6).map((post) => (
+                    <StandardPostCard key={post.id} post={post} />
+                  ))}
                 </div>
               </section>
             )}
